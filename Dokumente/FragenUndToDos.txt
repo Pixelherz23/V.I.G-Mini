@@ -1,0 +1,14 @@
+-wie nah muss das Projekt an der realität sein? (Stichwort Nutzung Creative Commence lizenz, AGB erstellen usw.)
+-B
+
+
+
+ToDo:
+-Lichtsensor rauskicken
+-Anforderung/Use-Case "aktive Funktionen deaktivieren" hinzufügen
+-Anforderung/Use-Case "email ändern" hinzufügen
+-Anforderung/Use-Case "passwort ändern" hinzufügen
+-Anforderung/Use-Case "Nach-und Vornamen ändern" hinzufügen
+
+-Prioität von Anforderung/Use-Case "Java-Client" ändern
+Anforderung "Web-Anwendung" und alles ws hinzufügen 
