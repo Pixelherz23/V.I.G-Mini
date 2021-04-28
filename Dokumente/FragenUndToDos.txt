@@ -4,11 +4,16 @@
 
 
 ToDo:
+-Word-Doc in Latex übertragen
 -Lichtsensor rauskicken
 -Anforderung/Use-Case "aktive Funktionen deaktivieren" hinzufügen
 -Anforderung/Use-Case "email ändern" hinzufügen
 -Anforderung/Use-Case "passwort ändern" hinzufügen
 -Anforderung/Use-Case "Nach-und Vornamen ändern" hinzufügen
+-Anforderung/Use-Case bzgl. manuelle Steuering/Automatisiertierung durch Zeitplan bearbeiten ()
 
 -Prioität von Anforderung/Use-Case "Java-Client" ändern
-Anforderung "Web-Anwendung" und alles ws hinzufügen 
+-Funktionale Anforderung User Story editieren, Arduino zu ESP32
+-Welche Art von Datenbank in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (MySql, PostgreSQL ... ) 
+-Welche Art von Web-Server in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (Apache, Glassfish ... )
+-Welche Art von GUI-Framework in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (MySql, PostgreSQL ... ) 
