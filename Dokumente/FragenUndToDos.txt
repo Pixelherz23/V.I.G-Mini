@@ -16,4 +16,5 @@ ToDo:
 -Funktionale Anforderung User Story editieren, Arduino zu ESP32
 -Welche Art von Datenbank in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (MySql, PostgreSQL ... ) 
 -Welche Art von Web-Server in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (Apache, Glassfish ... )
--Welche Art von GUI-Framework in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (MySql, PostgreSQL ... ) 
+-Welche Art von GUI-Framework in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (MySql, PostgreSQL ... )
+-Mockup ändern: Zeitplanfunktion für Bewässerung , Temp etc. reinpacken
