@@ -2,6 +2,7 @@
 -Müssen wir auch eine Bedinungsanleitung für den Anwender machen?
 -Brauchen wir ein Impressum
 - Softwarearchitektur: Sicht und Schicht das selbe? 
+-Konzeptionelles Analyseklassendiagramm? ist dass das gleiche wie Java-Klassendiagramm? 
 
 
 
