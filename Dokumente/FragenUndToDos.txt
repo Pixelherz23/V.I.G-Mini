@@ -1,6 +1,7 @@
 -wie nah muss das Projekt an der realität sein? (Stichwort Nutzung Creative Commence lizenz, AGB erstellen usw.)
 -Müssen wir auch eine Bedinungsanleitung für den Anwender machen?
 -Brauchen wir ein Impressum
+- Softwarearchitektur: Sicht und Schicht das selbe? 
 
 
 
