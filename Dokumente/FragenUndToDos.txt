@@ -9,9 +9,7 @@ ToDo:
 -Word-Doc in Latex übertragen
 -Lichtsensor rauskicken
 -Anforderung/Use-Case "aktive Funktionen deaktivieren" hinzufügen
--Anforderung/Use-Case "email ändern" hinzufügen
--Anforderung/Use-Case "passwort ändern" hinzufügen
--Anforderung/Use-Case "Nach-und Vornamen ändern" hinzufügen
+-Anforderung/Use-Case "LED Modis wechseln (Wachstums, Blüte, Syntese phase )" hinzufügen
 -Anforderung/Use-Case bzgl. manuelle Steuering/Automatisiertierung durch Zeitplan bearbeiten ()
 
 -Prioität von Anforderung/Use-Case "Java-Client" ändern
@@ -20,3 +18,4 @@ ToDo:
 -Welche Art von Web-Server in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (Apache, Glassfish ... )
 -Welche Art von GUI-Framework in  "Rahmenbedigungen" und anderen Kapiteln spezifizieren (MySql, PostgreSQL ... )
 -Mockup ändern: Zeitplanfunktion für Bewässerung , Temp etc. reinpacken
+
