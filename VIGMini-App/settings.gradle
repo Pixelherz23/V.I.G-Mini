@@ -1,0 +1,2 @@
+rootProject.name = "VIG-Mini"
+include ':app'
