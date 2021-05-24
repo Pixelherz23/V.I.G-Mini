@@ -11,4 +11,9 @@
     <string name="name">Name</string>
     <string name="password_rpt">Passwort wiederholen</string>
     <string name="acc_exists">Sie haben bereits ein Konto?</string>
+    <string name="soilMoisture">Bodenfeuchtigkeit</string>
+    <string name="soilMoistureMin">0%</string>
+    <string name="soilMoistureMax">100%</string>
+    <string name="time">Uhrzeit</string>
+    <string name="save">Speichern</string>
 </resources>
