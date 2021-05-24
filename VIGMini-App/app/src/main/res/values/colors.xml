@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="orangeRed">#F44336</color>
+    <color name="appBackground">#D32D2D</color>
+    <color name="cardBackground">#FF5D56</color>
     <color name="gray1">#A6A6A6</color>
 </resources>

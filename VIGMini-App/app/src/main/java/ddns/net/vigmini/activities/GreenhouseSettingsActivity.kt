@@ -1,11 +1,12 @@
-package ddns.net.vigmini
+package ddns.net.vigmini.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import ddns.net.vigmini.R
 
-class LoginActivity  : AppCompatActivity() {
+class GreenhouseSettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_greenhouse_settings)
     }
 }
