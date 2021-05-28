@@ -1,0 +1,35 @@
+#bodenfeuchtigkeit{
+    display: inline;
+    font-size: large;
+    margin-left: 120px;
+}
+
+body section form{
+    display: inline;
+}
+
+body h1{
+    text-decoration: underline;
+}
+
+body section form button{
+    margin-left: 400px;
+}
+
+#temperatur{
+
+    display: inline;
+    font-size: large;
+    margin-left: 120px;
+
+    
+}
+
+body section div{
+    display: inline;
+    margin-right: 47px;
+}
+
+#tsave{
+    margin-left: 396px;
+}

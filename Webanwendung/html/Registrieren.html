@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+
+
+<head>
+    <meta name="application-name" content="Registrierung">
+    <meta name="description" content="Registrierungsseite">
+    <meta name="author" content="Nils Jollet, Kai Stieler, Lukas Beckmann">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/general.css">
+    <link rel="stylesheet" type="text/css" href="../css/Registrieren.css">
+    <title>Registrierungsseite</title>
+</head>
+
+
+<body>
+    <header>
+        <picture>
+            <source media="(min-width: 1920px)" srcset="../pics/1920x200.png">
+            <source media="(min-width: 1280px)" srcset="../pics/1280x133.png">
+            <img src="../pics/1280x133.png" alt="Kann nicht dargestellt werden">        
+        </picture>
+    </header>
+
+    <h1 id="title">Registrierung:</h1>
+    <form action="/ProjektDatabase" method="GET">  <!-- Datenbank Kommunikation!-->
+        <div id="buttons1">
+            <label for="vorname">Vorname:</label>
+            <input required class="boxdesign" type="text" id="vorname" name="vorname">
+        
+            <label for="nachname">Nachname:</label>
+            <input required class="boxdesign" type="text" id="nachname" name="nachname">
+
+            <label for="email">E-Mail-Adresse:</label>
+            <input required class="boxdesign"  type="email" id="email" name="email">
+        </div>
+        <div id="buttons2">
+            <label for="passwort">Passwort:</label>
+            <input required class="boxdesign" type="password" id="passwort" name="passwort">
+
+            <label for="passwort2">Passwort wiederholen:</label>
+            <input required class="boxdesign" type="password" id="passwort2" name="passwort2">
+        </div>
+        <button type="submit">Registrieren</button>
+
+
+    </form>
+
+</body>
+
+<footer>
+    <a href="footer/Impressum.html">Impressum</a>
+    <a href="footer/Datenschutz.html">Datenschutzerklärung</a>
+    <a href="footer/Kontakt.html">Kontaktinformationen</a>
+    &copy; Copyright 2021 VIGMini
+</footer>

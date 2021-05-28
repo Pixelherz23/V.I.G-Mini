@@ -1,0 +1,60 @@
+body header picture{
+    position: relative;
+    top: -10px;
+    width: 100%;
+    margin-left: -8px;
+    
+
+}
+
+footer{
+    position: absolute;
+    bottom: 0px;
+    background-color: green;
+    color: white;
+    width: 100%;
+    margin-bottom: -10px;
+    margin-left: -8px;
+    text-align: center;
+}
+
+footer a{
+    color: white;
+    margin-left: 15px;
+}
+
+.boxdesign{
+    border: 2px solid rgb(7, 105, 252);
+    width: 250px;
+}
+
+body header nav{
+    position: absolute;
+    right: 0px;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    text-align: end;
+    
+}
+
+body header nav p{
+    display: inline-block;
+}
+
+body header nav a{
+    border: 2px solid black;
+    border-radius: 5px;
+    font-size: xx-large;
+    text-decoration: none;
+    font-weight: 600;
+    color: black;
+
+}
+
+.save{
+    border-radius: 5px;
+    background-color: blue;
+    color: white;
+    font-size: large;
+}
