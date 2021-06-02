@@ -1,3 +1,7 @@
+//To disable pragma messages on compile
+//include this Before including FastLED.h
+#define FASTLED_INTERNAL
+#include <FastLED.h>
 #include <DHTesp.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -8,27 +12,30 @@ DHTesp dht;
 const int DHT11_PIN =  21;
 const int MOIS_SENSOR_PIN = 32;
 const int FAN_PIN = 17;
+const int LED_PIN = 33;
+const int NUMBER_OF_LEDS = 20;
 
-unsigned long intervalOfSendData = 10000;
+
+unsigned long intervalOfSendData = 600000;
 unsigned long startTimeOfTimeout = 0;
 
 String GEWAECHSHAUS_ID = "ABCDE";
-const char * SSID_D = "XXX-XXX";
-const char * PASSWORD =  "glaubstDuDochSelberNicht :D";
-const String SERVER_URL = "XXX";
-//dd
+const char * SSID_D = "Vodafone-523C";
+const char * PASSWORD =  "eYkGXnyhzbP3ahs9";
+const String SERVER_URL = "http://79.231.136.119:5000";
+
 
 HTTPClient http;
-
 int temp;
 int mois;
 int hum;
-
 int tempLimit = 24;
 boolean isTempControlOn = true;
 
+CRGB leds[NUMBER_OF_LEDS];
 
 
+//Deklarierung von Funktionen
 void sendData();
 void connectToWifi();
 int getMoisture();
@@ -37,10 +44,12 @@ float getHum();
 void activateFan();
 void tempControl();
 void connectToWifi();
-
+void turnLightsOn(String color);
+void turnLightsOff();
 void setup() {
-  connectToWifi();
+  // connectToWifi();
 
+  FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUMBER_OF_LEDS);
   dht.setup(DHT11_PIN, DHTesp::DHT11);
   pinMode(FAN_PIN, OUTPUT);
   Serial.begin(9600);
@@ -49,7 +58,8 @@ void setup() {
 
 
 void loop() {
-  if (WiFi.status() == WL_CONNECTED) {
+  /*
+    if (WiFi.status() == WL_CONNECTED) {
 
     unsigned long currentMillis = millis();
     if ((currentMillis - startTimeOfTimeout ) > intervalOfSendData) //send data every 10minuts
@@ -57,13 +67,24 @@ void loop() {
       startTimeOfTimeout = currentMillis;
 
     }
-  } else {
+    } else {
     connectToWifi();
 
-  }
-
-
-
+    }
+  */
+  //Leds testen
+  turnLightsOn("blue");
+  delay(4000);
+  turnLightsOff();
+  delay(4000);
+  turnLightsOn("purple");
+  delay(4000);
+  turnLightsOff();
+  delay(4000);
+  turnLightsOn("bluePurple");
+  delay(4000);
+  turnLightsOff();
+  delay(4000);
 }
 
 void sendData() {
@@ -78,7 +99,6 @@ void sendData() {
   doc["humidity"]   = getHum();
   doc["temperature"] = getTemp();
 
-  // String jsonData = "{\""+GEWÄCHSHAUS_ID\":\"tPmAT5Ab3j7F9\",\"sensor\":\"BME280\",\"value1\":\"24.25\",\"value2\":\"49.54\",\"value3\":\"1005.14\"}"
   http.addHeader("Content-Type", "application/json");
   String requestBody;
   Serial.println("Data");
@@ -119,9 +139,6 @@ void connectToWifi() {
   }
 }
 
-/*
-   @delay als gerade Zahl angeben
-*/
 int getMoisture() {
   int anRead = analogRead(MOIS_SENSOR_PIN);
   delay(1000);
@@ -163,4 +180,41 @@ void tempControl() {
     }
 
   }
+}
+void turnLightsOn(String color) {
+  int ledDelay = 20;
+  for (int i = 0; i < NUMBER_OF_LEDS; i++) {
+    if (color.equals("blue")) {
+      leds[i] = CRGB(0, 0, 255);
+      FastLED.show();
+      delay(ledDelay);
+
+    } else if (color.equals("purple")) {
+      leds[i] = CRGB(127, 0, 255);
+      FastLED.show();
+      delay(ledDelay);
+
+    } else if (color.equals("bluePurple")) {
+      leds[i] = CRGB(0, 0, 255);
+      delay(20);
+      leds[i + 1] = CRGB(127, 0, 255);
+      delay(20);
+      i++;
+      FastLED.show();
+
+
+    }
+
+  }
+}
+void turnLightsOff() {
+  int ledDelay = 20;
+  for (int i = NUMBER_OF_LEDS - 1; i >= 0; i--) {
+    leds[i] = CRGB::Black;
+    FastLED.show();
+    delay(ledDelay);
+
+
+  }
+
 }
