@@ -12,14 +12,21 @@ DHTesp dht;
 const int DHT11_PIN =  21;
 const int MOIS_SENSOR_PIN = 32;
 const int FAN_PIN = 17;
+const int WATER_PUMP_PIN = 18;
 const int LED_PIN = 33;
 const int NUMBER_OF_LEDS = 20;
 
 
-unsigned long intervalOfSendData = 600000;
-unsigned long startTimeOfTimeout = 0;
 
-String GEWAECHSHAUS_ID = "ABCDE";
+
+unsigned long intervalOfSendData = 600000;//10MIn
+unsigned long pastTimeSend = 0;
+
+
+unsigned long intervalOfGetData = 30000;//30sekunden
+unsigned long pastTimeGet = 0;
+
+String GEWAECHSHAUS_ID = "GTD2-ERH6-E665";
 const char * SSID_D = "Vodafone-523C";
 const char * PASSWORD =  "eYkGXnyhzbP3ahs9";
 const String SERVER_URL = "http://79.231.136.119:5000";
@@ -31,6 +38,7 @@ int mois;
 int hum;
 int tempLimit = 24;
 boolean isTempControlOn = true;
+
 
 CRGB leds[NUMBER_OF_LEDS];
 
@@ -46,63 +54,91 @@ void tempControl();
 void connectToWifi();
 void turnLightsOn(String color);
 void turnLightsOff();
+
+
 void setup() {
-  // connectToWifi();
+  connectToWifi();
 
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUMBER_OF_LEDS);
   dht.setup(DHT11_PIN, DHTesp::DHT11);
   pinMode(FAN_PIN, OUTPUT);
+  pinMode(WATER_PUMP_PIN, OUTPUT);
   Serial.begin(9600);
 
 }
 
 
 void loop() {
+  sendData();
   /*
     if (WiFi.status() == WL_CONNECTED) {
 
     unsigned long currentMillis = millis();
-    if ((currentMillis - startTimeOfTimeout ) > intervalOfSendData) //send data every 10minuts
+    if ((currentMillis - pastTimeSend ) > intervalOfSendData) //send data every 10minuts
     {
-      startTimeOfTimeout = currentMillis;
+      pastTimeSend = currentMillis;
+      sendData();
+    }
+     unsigned long currentMillis2 = millis();
+    if ((currentMillis2 - pastTimeGet ) > intervalOfGetData) //requestData every 30 seconds
+    {
+      pastTimeGet = currentMillis2;
 
     }
+
+
     } else {
     connectToWifi();
 
     }
+     /*
+         turnLightsOn("blue");
+    delay(4000);
+    turnLightsOff();
+    delay(4000);
+    turnLightsOn("purple");
+    delay(4000);
+    turnLightsOff();
+    delay(4000);
+    turnLightsOn("bluePurple");
+    delay(4000);
+    turnLightsOff();
+    delay(4000);
+
+
+
   */
-  //Leds testen
-  turnLightsOn("blue");
-  delay(4000);
-  turnLightsOff();
-  delay(4000);
-  turnLightsOn("purple");
-  delay(4000);
-  turnLightsOff();
-  delay(4000);
-  turnLightsOn("bluePurple");
-  delay(4000);
-  turnLightsOff();
-  delay(4000);
+
+
 }
 
+
+void requestSettings() {
+
+
+}
+/*
+   send Data in Json Format
+*/
 void sendData() {
   Serial.println("send Data wird ausgeführt");
-  String serverpath = SERVER_URL + "/sensor";
+  String serverpath = SERVER_URL + "/newMeasurements";
 
   http.begin(serverpath);
 
   StaticJsonDocument<200> doc;
-  doc["gewaechshaus-id"] = GEWAECHSHAUS_ID;
-  doc["moisture"] = getMoisture();
+  doc["product_key"] = GEWAECHSHAUS_ID;
+  doc["led_status"] = true;
+  doc["temperature"] = String(getTemp());
   doc["humidity"]   = getHum();
-  doc["temperature"] = getTemp();
+  doc["soil_moisture"] = String(getMoisture());
 
   http.addHeader("Content-Type", "application/json");
   String requestBody;
   Serial.println("Data");
   serializeJson(doc, requestBody);
+  //serializeJsonPretty(doc, Serial);
+
   int httpResponseCode = http.POST(requestBody);
 
   if (httpResponseCode > 0) {
@@ -114,7 +150,7 @@ void sendData() {
 
   } else {
 
-    Serial.println("Error while sending HTTP POST:"); // httpClient.errorToString(statusCode).c_str()
+    Serial.printf("Error while sending HTTP POST: %s \n", http.errorToString(httpResponseCode).c_str()); // httpClient.errorToString(statusCode).c_str()
     Serial.println(httpResponseCode);
 
   }
@@ -216,5 +252,10 @@ void turnLightsOff() {
 
 
   }
-
+}
+void watering() {
+  digitalWrite(WATER_PUMP_PIN, HIGH);  // Schaltet ein
+  delay(5000);
+  digitalWrite(WATER_PUMP_PIN, LOW);   // Schaltet aus
+  delay(5000);
 }
