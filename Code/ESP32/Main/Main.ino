@@ -6,6 +6,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
+#include <time.h>
 
 
 DHTesp dht;
@@ -27,8 +28,8 @@ unsigned long intervalOfGetData = 30000;//30sekunden
 unsigned long pastTimeGet = 0;
 
 String GEWAECHSHAUS_ID = "GTD2-ERH6-E665";
-const char * SSID_D = "Vodafone-523C";
-const char * PASSWORD =  "eYkGXnyhzbP3ahs9";
+const char * SSID_D = "XXX";
+const char * PASSWORD =  "XXX";
 const String SERVER_URL = "http://79.231.136.119:5000";
 
 
@@ -38,6 +39,9 @@ int mois;
 int hum;
 int tempLimit = 24;
 boolean isTempControlOn = true;
+
+time_t curTimestamp;
+char* testTime = "16:29:00";
 
 
 CRGB leds[NUMBER_OF_LEDS];
@@ -54,7 +58,8 @@ void tempControl();
 void connectToWifi();
 void turnLightsOn(String color);
 void turnLightsOff();
-
+void requestSettings();
+void requestTimeStamp();
 
 void setup() {
   connectToWifi();
@@ -106,13 +111,50 @@ void loop() {
     delay(4000);
 
 
+    requestTimeStamp();
+    delay(2000);
 
   */
 
 
 }
 
+void requestTimeStamp() {
+  Serial.println("Request Time wird ausgeführt");
+  String serverpath = SERVER_URL + "/time";
+  http.begin(serverpath);
+  int httpResponseCode = http.GET();
 
+  if (httpResponseCode > 0) {
+
+    String response = http.getString();
+    const char* timestamp = response.c_str();
+
+    struct tm *timeptr, tm1, tm2;
+
+    if (strptime(timestamp, "%T", &tm2) == NULL) { //https://man7.org/linux/man-pages/man3/strptime.3.html
+      Serial.printf("\nstrptime failed\n");
+    }
+    curTimestamp = mktime(&tm2);
+
+  } else {
+
+
+    Serial.printf("Error while request Time %s \n", http.errorToString(httpResponseCode).c_str()); // httpClient.errorToString(statusCode).c_str()
+    Serial.println(httpResponseCode);
+
+  }
+
+
+}
+int comparetime(time_t time1, time_t time2) {
+  if (difftime(time1, time2) > 0.0) {
+    return 1;
+  } else {
+    return -1;
+  }
+
+}
 void requestSettings() {
 
 
