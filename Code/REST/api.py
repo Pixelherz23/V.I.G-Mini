@@ -108,7 +108,7 @@ def measurements_month():
 
 # inserts new measuremnts to the DB
 # neue URL /greenhouse/measurements/new
-@app.route('/newMeasurements', methods=["POST"])
+@app.route('/greenhouse/measurements/new', methods=["POST"])
 def new_measurements():
     data = request.get_json()
     if 'product_key' in data and 'led_status' in data and 'temperature' in data and 'humidity' in data and 'soil_moisture' in data:
@@ -241,7 +241,7 @@ def light_settings():
 
 # Creates a new user into the DB when recieve a get or post
 # neue URL /user/new
-@app.route('/newuser', methods=['GET', 'POST'])
+@app.route('/user/new', methods=['GET', 'POST'])
 def new_user():
     if request.method == 'POST':
         firstname = request.form.get('firstname')
