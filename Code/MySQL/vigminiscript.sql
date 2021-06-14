@@ -121,7 +121,7 @@ create table TIMETABLE
 (
    ID_TIMETABLE         int not null AUTO_INCREMENT comment '',
    ID_SETTINGS          int not null  comment '',
-   INTERVAL_TIME 			smallint not null comment '',
+   INTERVAL_TIME 		smallint not null comment '',
    TIMETABLE_TYPE       varchar(15) not null  comment '',
    FROM_TIME            time not null default '00:00:00'  comment '',
    TO_TIME              time  comment '',
@@ -162,30 +162,34 @@ DELIMITER $$
 create procedure ACTIVATE_GREENHOUSE(
 	in p_product_key varchar(15),
 	in p_email varchar(100),
-	in p_name varchar(50),
 	out p1 varchar(50)
 )
 begin
 	if ( select exists (select 1 from GREENHOUSE where PRODUCT_KEY = p_product_key) ) then
-		update GREENHOUSE
-		set EMAIL = p_email, NAME = p_name
-		where PRODUCT_KEY = p_product_key;
-		insert into SETTINGS(PRODUCT_KEY)
-		values(p_product_key);
-		
-		select ID_SETTINGS from SETTINGS where PRODUCT_KEY = p_product_key limit 1 into p1;
-		insert into TIMETABLE(ID_SETTINGS, INTERVAL_TIME,  TIMETABLE_TYPE)
-		values
-			(p1, 1, 'light'),
-			(p1, 2, 'light'),
-			(p1, 3, 'light'),
-			(p1, 1, 'soilMoisture'),
-			(p1, 2, 'soilMoisture'),
-			(p1, 3, 'soilMoisture');
-				
-		set p1 := 'Success';
+
+		if ( select exists (select 1 from TBL_USER where EMAIL = p_email) ) then
+			update GREENHOUSE
+			set EMAIL = p_email
+			where PRODUCT_KEY = p_product_key;
+			insert into SETTINGS(PRODUCT_KEY)
+			values(p_product_key);
+			
+			select ID_SETTINGS from SETTINGS where PRODUCT_KEY = p_product_key limit 1 into p1;
+			insert into TIMETABLE(ID_SETTINGS, INTERVAL_TIME,  TIMETABLE_TYPE)
+			values
+				(p1, 1, 'light'),
+				(p1, 2, 'light'),
+				(p1, 3, 'light'),
+				(p1, 1, 'soilMoisture'),
+				(p1, 2, 'soilMoisture'),
+				(p1, 3, 'soilMoisture');
+					
+			set p1 := 'Success';
+		else
+			set p1 := 'NoEmail';
+		end if;
 	else
-		set p1 := 'Greenhouse does not exist';
+		set p1 := 'NoGreenhouse';
 	end if;
 end$$
 DELIMITER ;
@@ -275,31 +279,31 @@ create procedure UPDATE_SETTINGS(
 	
 )
 begin
-	if ( select exists (select 1 from GREENHOUSE where PRODUCT_KEY = p3_product_key) ) then
-		if(p_max_temperature != NULL) then 
+	if ( select exists (select 1 from GREENHOUSE where PRODUCT_KEY = p4_product_key) ) then
+		if(p_max_temperature is NOT NULL) then 
 			update SETTINGS set MAX_TEMPERATURE = p_max_temperature where PRODUCT_KEY = p4_product_key; end if;
 		
-		if(p_min_soil_moisture != NULL) then 
+		if(p_min_soil_moisture is NOT NULL) then 
 			update SETTINGS set MIN_SOIL_MOISTURE = p_min_soil_moisture where PRODUCT_KEY = p4_product_key; end if;
 		
-		if(p_temp_on != NULL) then 
+		if(p_temp_on is NOT NULL) then 
 			update SETTINGS set TEMP_ON = p_temp_on where PRODUCT_KEY = p4_product_key; end if;
 			
-		if(p_soil_moisture_on != NULL) then 
+		if(p_soil_moisture_on is NOT NULL) then 
 			update SETTINGS set SOIL_MOISTURE_ON = p_soil_moisture_on where PRODUCT_KEY = p4_product_key; end if;
 			
 		select ID_SETTINGS from SETTINGS where PRODUCT_KEY = p4_product_key limit 1 into p5;
 		
-		if(p_timetable_type != NULL and p_interval != NULL) then
-			if(p_from != NULL) then
+		if(p_timetable_type is NOT NULL and p_interval is NOT NULL) then
+			if(p_from is NOT NULL) then
 				update TIMETABLE set FROM_TIME = p_from 
 				where ID_SETTINGS = p5 and TIMETABLE_TYPE = p_timetable_type and INTERVAL_TIME = p_interval; end if;
 			
-			if(p_from != NULL) then
+			if(p_to is NOT NULL) then
 				update TIMETABLE set TO_TIME = p_to 
 				where ID_SETTINGS = p5 and TIMETABLE_TYPE = p_timetable_type and INTERVAL_TIME = p_interval; end if;
 				
-			if(p_from != NULL) then
+			if(p_timetable_on is NOT NULL) then
 				update TIMETABLE set TIMETABLE_ON = p_timetable_on 
 				where ID_SETTINGS = p5 and TIMETABLE_TYPE = p_timetable_type and INTERVAL_TIME = p_interval; end if;
 			end if;
@@ -352,10 +356,10 @@ create procedure UPDATE_USER(
 )
 begin 
 	if ( select exists (select 1 from TBL_USER where EMAIL = p2_email) ) then
-		if (p_new_email = NULL) then
+		if (p_new_email is NULL) then
 			update TBL_USER set FIRST_NAME = p2_first_name, LAST_NAME = p2_last_name
 			where EMAIL = p2_email;
-			if (p_password != NULL) then
+			if (p2_password is NOT NULL) then
 				update TBL_USER set PASSWORD = p2_password 
 				where EMAIL = p2_email; end if;
 			set p7 := 'Success';  
@@ -368,18 +372,23 @@ begin
 				update TBL_USER 
 				set FIRST_NAME = p2_first_name, LAST_NAME = p2_last_name, EMAIL = p_new_email
 				where EMAIL = p2_email;
-				if (p_password != NULL) then
+				if (p2_password is NOT NULL) then
 					update TBL_USER set PASSWORD = p2_password 
 					where EMAIL = p2_email; end if;
 				
 				update GREENHOUSE set EMAIL = p_new_email where PRODUCT_KEY = p7;
 				
 			else
+				
 				update TBL_USER 
-				set FIRST_NAME = p2_first_name, LAST_NAME = p2_last_name, PASSWORD = p2_password, EMAIL = p_new_email
-				where EMAIL = p2_email; end if;
-			
-				set p7 := 'Success';
+				set FIRST_NAME = p2_first_name, LAST_NAME = p2_last_name, EMAIL = p_new_email
+				where EMAIL = p2_email; 
+
+				if (p2_password is NOT NULL) then
+					update TBL_USER set PASSWORD = p2_password 
+					where EMAIL = p_new_email; end if;
+				end if;
+			set p7 := 'Success';
 		end if;
 		
 	else
@@ -400,23 +409,23 @@ create view HELP as
 	where INFORMATION_TYPE = 'help';
 	
 create view MEASUREMENTS_NOW as
-	select TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP
+	select PRODUCT_KEY, TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP
 	from MEASUREMENTS
 	order by TIME_STAMP desc
 	limit 1;
 	
 create view MEASUREMENTS_DAY as
-	select TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP
+	select PRODUCT_KEY, TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP
 	from MEASUREMENTS
 	where timestampdiff(HOUR, TIME_STAMP, CURRENT_TIMESTAMP()) <= 24;
 
 create view MEASUREMENTS_WEEK as
-	select TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP
+	select PRODUCT_KEY, TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP
 	from MEASUREMENTS
 	where timestampdiff(DAY, TIME_STAMP, CURRENT_TIMESTAMP()) <= 7;	
 	
 create view MEASUREMENTS_MONTH as
-	select TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP
+	select PRODUCT_KEY, TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP
 	from MEASUREMENTS
 	where timestampdiff(WEEK, TIME_STAMP, CURRENT_TIMESTAMP()) <= 4;
 	
