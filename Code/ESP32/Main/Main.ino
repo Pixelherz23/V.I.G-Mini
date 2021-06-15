@@ -1,3 +1,4 @@
+//intervalle beachten
 //To disable pragma messages on compile
 //include this Before including FastLED.h
 #define FASTLED_INTERNAL
@@ -19,29 +20,35 @@ const int NUMBER_OF_LEDS = 20;
 
 
 
-
 unsigned long intervalOfSendData = 600000;//10MIn
 unsigned long pastTimeSend = 0;
-
 
 unsigned long intervalOfGetData = 30000;//30sekunden
 unsigned long pastTimeGet = 0;
 
+unsigned long intervalOfGetTime = 10000;//10sekunden
+unsigned long pastTimeOfTime =  0;
+
 String GEWAECHSHAUS_ID = "GTD2-ERH6-E665";
-const char * SSID_D = "XXX";
+const char * SSID_D = "Vodafone-523C";
 const char * PASSWORD =  "XXX";
-const String SERVER_URL = "http://79.231.136.119:5000";
+const String SERVER_URL = "https://vig-mini.ddns.net";
 
 
 HTTPClient http;
+JsonObject settingsObj;
 int temp;
 int mois;
 int hum;
+
 int tempLimit = 24;
 boolean isTempControlOn = true;
 
-time_t curTimestamp;
-char* testTime = "16:29:00";
+String timestamp= "12:00:00";
+
+
+
+
 
 
 CRGB leds[NUMBER_OF_LEDS];
@@ -59,10 +66,11 @@ void connectToWifi();
 void turnLightsOn(String color);
 void turnLightsOff();
 void requestSettings();
-void requestTimeStamp();
+String requestTimeStamp();
 
 void setup() {
   connectToWifi();
+  
 
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUMBER_OF_LEDS);
   dht.setup(DHT11_PIN, DHTesp::DHT11);
@@ -74,9 +82,12 @@ void setup() {
 
 
 void loop() {
-  sendData();
+
+
+  //==Business-logic===
   /*
-    if (WiFi.status() == WL_CONNECTED) {
+  if (WiFi.status() == WL_CONNECTED) {
+
 
     unsigned long currentMillis = millis();
     if ((currentMillis - pastTimeSend ) > intervalOfSendData) //send data every 10minuts
@@ -84,58 +95,61 @@ void loop() {
       pastTimeSend = currentMillis;
       sendData();
     }
-     unsigned long currentMillis2 = millis();
+    unsigned long currentMillis2 = millis();
     if ((currentMillis2 - pastTimeGet ) > intervalOfGetData) //requestData every 30 seconds
     {
       pastTimeGet = currentMillis2;
+      settingsObj = requestSettings();
 
     }
+    unsigned long currentMillis3 = millis();
+    if ((currentMillis3 - pastTimeGet ) > intervalOfGetTime) //requestCurrentTimeEr every 10 seconds
+    {
+      pastTimeOfTime = currentMillis3;
+      timestamp = requestTimeStamp();
 
-
-    } else {
+    }
+  } else {
     connectToWifi();
 
-    }
-     /*
-         turnLightsOn("blue");
-    delay(4000);
-    turnLightsOff();
-    delay(4000);
-    turnLightsOn("purple");
-    delay(4000);
-    turnLightsOff();
-    delay(4000);
-    turnLightsOn("bluePurple");
-    delay(4000);
-    turnLightsOff();
-    delay(4000);
+  }
+  tempControl();
+  
+ */
+  //==Buiness-Logic-End===
 
 
-    requestTimeStamp();
-    delay(2000);
+  //==Test-Logic==
+  requestSettings();
+  delay(5000);
+  //==TEst-Logic-End==
 
+  //This is the way and nothing else LUL
+ /*
+  String time1 = "10:48:33";
+  String time2 = "10:48:32";
+  if (time1 > time2) {
+    Serial.println("Time1 is bigger");
+
+  } else {
+    Serial.println("Time2 is bigger");
+  }
+  delay(1000);
   */
-
-
 }
 
-void requestTimeStamp() {
+
+
+String requestTimeStamp() {
   Serial.println("Request Time wird ausgeführt");
   String serverpath = SERVER_URL + "/time";
   http.begin(serverpath);
   int httpResponseCode = http.GET();
-
+  const char* timestamp = NULL;
   if (httpResponseCode > 0) {
 
     String response = http.getString();
-    const char* timestamp = response.c_str();
-
-    struct tm *timeptr, tm1, tm2;
-
-    if (strptime(timestamp, "%T", &tm2) == NULL) { //https://man7.org/linux/man-pages/man3/strptime.3.html
-      Serial.printf("\nstrptime failed\n");
-    }
-    curTimestamp = mktime(&tm2);
+    timestamp = response.c_str();
 
   } else {
 
@@ -145,8 +159,13 @@ void requestTimeStamp() {
 
   }
 
+  return String(timestamp);
+
+
 
 }
+
+
 int comparetime(time_t time1, time_t time2) {
   if (difftime(time1, time2) > 0.0) {
     return 1;
@@ -155,8 +174,40 @@ int comparetime(time_t time1, time_t time2) {
   }
 
 }
+//intervalgeschichte implementieren
 void requestSettings() {
+ 
+  
+  Serial.println("requestSettings wird ausgeführt");
 
+  String settings = "";
+  int httpResponseCode = NULL;
+
+  String pathTemp = SERVER_URL + "/greenhouse/settings/temperature?product_key=" + GEWAECHSHAUS_ID;
+  String pathMoisVal = SERVER_URL + "/greenhouse/settings/soil-moisture/value?product_key=" + GEWAECHSHAUS_ID+ "&interval=1";
+  String pathSoilMoisTime = SERVER_URL + "/greenhouse/settings/soil-moisture/time?product_key=" + GEWAECHSHAUS_ID;
+  String pathLight = SERVER_URL + "/greenhouse/settings/light?product_key=" + GEWAECHSHAUS_ID;
+
+  StaticJsonDocument<200> doc;
+  JsonObject obj;
+
+  http.begin(pathTemp);
+  httpResponseCode = http.GET();
+
+  if (httpResponseCode > 0 ) {
+   deserializeJson(doc, http.getString());
+   obj = doc.as<JsonObject>();
+  Serial.println("Temp Settings in json format");
+  serializeJsonPretty(doc, Serial);
+  int tempLimit = int(doc("MAX_TEMPERATURE"));
+  if(int(doc("TEMP_ON") == 1)){
+    
+  }
+  
+  } else {
+    Serial.printf("Error while sending HTTP GET: %s \n", http.errorToString(httpResponseCode).c_str()); // httpClient.errorToString(statusCode).c_str()
+    Serial.println(httpResponseCode);
+  }
 
 }
 /*
