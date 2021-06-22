@@ -6,11 +6,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ddns.net.vigmini.R
-import ddns.net.vigmini.datamodel.Information
+import ddns.net.vigmini.data.model.Information
+import ddns.net.vigmini.data.model.InformationItem
 
 // Create the basic adapter extending from RecyclerView.Adapter
 // Note that we specify the custom ViewHolder which gives us access to our views
-class InformationAdapter (private val infos: List<Information>) : RecyclerView.Adapter<InformationAdapter.ViewHolder>() {
+class InformationAdapter (private val infos: Information) : RecyclerView.Adapter<InformationAdapter.ViewHolder>() {
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
@@ -37,12 +38,12 @@ class InformationAdapter (private val infos: List<Information>) : RecyclerView.A
     // Involves populating data into the item through holder
     override fun onBindViewHolder(viewHolder: InformationAdapter.ViewHolder, position: Int) {
         // Get the data model based on position
-        val info: Information = infos[position]
+        val info: InformationItem = infos[position]
         // Set item views based on your views and data model
         val textView = viewHolder.headlineTextView
-        textView.setText(info.headline)
+        textView.setText(info.HEADLINE)
         val textView2 = viewHolder.contentTextView
-        textView2.setText(info.content)
+        textView2.setText(info.CONTENT)
 
     }
 

@@ -7,6 +7,6 @@ import ddns.net.vigmini.R
 class GreenhouseSettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.item_greenhouse_settings)
+        setContentView(R.layout.activity_greenhouse_settings)
     }
 }
