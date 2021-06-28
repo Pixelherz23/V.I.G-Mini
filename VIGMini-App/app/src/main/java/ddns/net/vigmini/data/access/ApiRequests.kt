@@ -1,5 +1,6 @@
 package ddns.net.vigmini.data.access
 
+import ddns.net.vigmini.data.model.Greenhouse
 import ddns.net.vigmini.data.model.Information
 import ddns.net.vigmini.data.model.MeasurementsItem
 import retrofit2.Call
@@ -9,6 +10,9 @@ interface ApiRequests {
 
     @GET("/information/{info}")
     fun getInformation(@Path("info") info: String): Call<Information>
+
+    @GET("/greenhouse/all")
+    fun getGreenhouses(@Query("e-mail") email: String): Call<Greenhouse>
 
     @GET("/greenhouse/measurements/now")
     fun getMeasurementsNow(@Query("product_key") productKey: String): Call<MeasurementsItem>

@@ -16,4 +16,6 @@
     <string name="soilMoistureMax">100%</string>
     <string name="time">Uhrzeit</string>
     <string name="save">Speichern</string>
+    <string name="temperatur">Temperatur</string>
+    <string name="humidity">Luftfeuchtigkeit</string>
 </resources>
