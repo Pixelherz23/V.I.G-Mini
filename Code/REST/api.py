@@ -1,18 +1,16 @@
-from re import I
-import flask
-from flask import jsonify, render_template, request, Response, redirect, url_for, session
-import simplejson as json
+
+from flask import Flask, jsonify, json, request, Response
 from decimal import Decimal
 from datetime import datetime, timedelta
 import pytz
 import mysql.connector as mysql
-from passlib.hash import sha256_crypt
 from mysql.connector import errorcode as errcode
-from werkzeug.wrappers import response
-from werkzeug.wrappers.response import ResponseStreamMixin
+from passlib.hash import sha256_crypt
+from flask_cors import CORS, cross_origin
+
 
 # Encodes Decimal to String for Json
-class MyJSONEncoder(flask.json.JSONEncoder):
+class MyJSONEncoder(json.JSONEncoder):
 
     def default(self, obj):
         if isinstance(obj, Decimal):
@@ -30,9 +28,10 @@ databaseConf = {
     'raise_on_warnings': True
 }
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 app.config["DEBUG"] = True
 app.json_encoder = MyJSONEncoder
+CORS(app)
 
 @app.after_request # blueprint can also be app~~
 def after_request(response):
@@ -52,7 +51,7 @@ def connDB():
         elif err.errno == errcode.ER_BAD_DB_ERROR:
             print("Database does not exist")
         else:
-            print(err)
+            print("ERROR: %s", err)
     
     return conn
 
@@ -65,7 +64,7 @@ def executeQuery(query, dict=False):
     cursor.close()
     return data
 
-def executeQuery(query, data, dict=False):
+def executeQueryData(query, data, dict=False):
     conn = connDB()
     cursor = conn.cursor(dictionary=dict)
     cursor.execute(query, data)
@@ -75,7 +74,7 @@ def executeQuery(query, data, dict=False):
 
 
 def check_password(email, pw):
-    pw_db = executeQuery('SELECT PASSWORD FROM TBL_USER WHERE EMAIL = %s', (email,))
+    pw_db = executeQueryData('SELECT PASSWORD FROM TBL_USER WHERE EMAIL = %s', (email,))
     return sha256_crypt.verify(pw, pw_db[0][0])
 
 # returns the system time
@@ -90,46 +89,80 @@ def time():
 @app.route('/information/news', methods=['GET'])
 def news():
     all_news = executeQuery('SELECT * FROM NEWS', True)
-    return jsonify(all_news)
-
+    if all_news:
+        return jsonify(all_news)
+    else:
+        # HTTP status code 400 Bad Request
+        return Response(status=400)
 # returns the help informations from the DB
 # is working
 @app.route('/information/help', methods=['GET'])
 def help():
     all_help = executeQuery('SELECT * FROM HELP', True)
-    return jsonify(all_help)
+    if all_help:
+        return jsonify(all_help)
+    else:
+        # HTTP status code 400 Bad Request
+        return Response(status=400)
+
+@app.route('/greenhouse/all', methods=['GET'])
+def greenhouse():
+    email = request.args.get('e-mail')
+    if email:
+        greenhouses = executeQueryData('SELECT PRODUCT_KEY, NAME FROM GREENHOUSE WHERE EMAIL = %s', (email,), True)
+        return jsonify(greenhouses)
+    else:
+        # HTTP status  code 400 Bad Request (please enter all fields)
+        return Response(status=400)
+    
 
 #  returns the newest measurments
 # is working
 @app.route('/greenhouse/measurements/now', methods=['GET'])
 def measurements_now():
     product_key = request.args.get('product_key')
-    day_measurements = executeQuery('SELECT TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP FROM MEASUREMENTS_NOW WHERE PRODUCT_KEY = %s', (product_key,), True)
-    return jsonify(day_measurements)
+    if product_key:
+        day_measurements = executeQueryData('SELECT TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP FROM MEASUREMENTS_NOW WHERE PRODUCT_KEY = %s', (product_key,), True)[0]
+        return jsonify(day_measurements)
+    else:
+        # HTTP status  code 400 Bad Request (please enter all fields)
+        return Response(status=400)
 
 #  returns the measurments from the last day
 # is working
 @app.route('/greenhouse/measurements/day', methods=['GET'])
 def measurements_day():
     product_key = request.args.get('product_key')
-    day_measurements = executeQuery('SELECT TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP FROM MEASUREMENTS_DAY WHERE PRODUCT_KEY = %s', (product_key,), True)
-    return jsonify(day_measurements)
+    if product_key:
+        day_measurements = executeQueryData('SELECT TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP FROM MEASUREMENTS_DAY WHERE PRODUCT_KEY = %s', (product_key,), True)
+        return jsonify(day_measurements)
+    else:
+        # HTTP status  code 400 Bad Request (please enter all fields)
+        return Response(status=400)
 
 #  returns the measurments from the last week
 # is working
 @app.route('/greenhouse/measurements/week', methods=['GET'])
 def measurements_week():
     product_key = request.args.get('product_key')
-    week_measurements = executeQuery('SELECT TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP FROM MEASUREMENTS_WEEK WHERE PRODUCT_KEY = %s', (product_key,), True)
-    return jsonify(week_measurements)
+    if product_key:
+        week_measurements = executeQueryData('SELECT TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP FROM MEASUREMENTS_WEEK WHERE PRODUCT_KEY = %s', (product_key,), True)
+        return jsonify(week_measurements)
+    else:
+        # HTTP status  code 400 Bad Request (please enter all fields)
+        return Response(status=400)
 
 #  returns the measurments from the last month
 # is working
 @app.route('/greenhouse/measurements/month', methods=['GET'])
 def measurements_month():
     product_key = request.args.get('product_key')
-    month_measurements = executeQuery('SELECT TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP FROM MEASUREMENTS_MONTH WHERE PRODUCT_KEY = %s', (product_key,), True)
-    return jsonify(month_measurements)
+    if product_key:
+        month_measurements = executeQueryData('SELECT TEMPERATURE, HUMIDITY, SOIL_MOISTURE, TIME_STAMP FROM MEASUREMENTS_MONTH WHERE PRODUCT_KEY = %s', (product_key,), True)
+        return jsonify(month_measurements)
+    else:
+        # HTTP status  code 400 Bad Request (please enter all fields)
+        return Response(status=400)
 
 # inserts new measuremnts to the DB
 # is working
@@ -139,7 +172,6 @@ def new_measurements():
     if 'product_key' in data and 'led_status' in data and 'temperature' in data and 'humidity' in data and 'soil_moisture' in data:
         conn = connDB()
         cur = conn.cursor()
-        print(data['product_key'], data['led_status'], float(data['temperature']), int(data['humidity']), float(data['soil_moisture']),  sep="\n")
         proc = cur.callproc('NEW_MEASUREMENTS', 
             (data['product_key'], data['led_status'], float(data['temperature']), int(data['humidity']), float(data['soil_moisture']), None))
         if proc[5] == 'Success':
@@ -161,14 +193,11 @@ def new_measurements():
 def activate_greenhouse():
     product_key = request.args.get('product_key')
     email = request.args.get('e-mail')
-    name = request.args.get('name')
 
     if product_key and email:
         response = None
         conn = connDB()
         cur = conn.cursor()
-        if name == None:
-            name = 'Gewächshaus'
         proc = cur.callproc('ACTIVATE_GREENHOUSE', (product_key, email, None))
         if proc[2] == 'Success':
             conn.commit()
@@ -264,8 +293,8 @@ def update_settings():
 def temp_settings():
     product_key = request.args.get('product_key')
     if product_key:
-        if executeQuery('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
-            data = executeQuery('SELECT MAX_TEMPERATURE, TEMP_ON FROM SETTINGS WHERE PRODUCT_KEY = %s ', (product_key,), True)
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
+            data = executeQueryData('SELECT MAX_TEMPERATURE, TEMP_ON FROM SETTINGS WHERE PRODUCT_KEY = %s ', (product_key,), True)[0]
             return jsonify(data)
         # HTTP status code 404 Not Found (Greenhouse does not exist)
         return Response(status=404)
@@ -277,8 +306,8 @@ def temp_settings():
 def soil_moisture_settings_value():
     product_key = request.args.get('product_key')
     if product_key:
-        if executeQuery('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
-            data = executeQuery('SELECT SOIL_MOISTURE_ON, MIN_SOIL_MOISTURE FROM SETTINGS WHERE PRODUCT_KEY = %s', (product_key,), True)
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
+            data = executeQueryData('SELECT SOIL_MOISTURE_ON, MIN_SOIL_MOISTURE FROM SETTINGS WHERE PRODUCT_KEY = %s', (product_key,), True)[0]
             return jsonify(data)
         # HTTP status code 404 Not Found (Greenhouse does not exist)
         return Response(status=404)
@@ -290,12 +319,16 @@ def soil_moisture_settings_value():
 def soil_moisture_settings_time1():
     product_key = request.args.get('product_key')
     interval = request.args.get('interval')
-    if product_key and interval:
-        if executeQuery('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
-            query_select = 'SELECT SETTINGS.SOIL_MOISTURE_ON, TIMETABLE.TIMETABLE_ON, TIMETABLE.FROM_TIME FROM SETTINGS '
+    if product_key:
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
+            query_select = 'SELECT SETTINGS.SOIL_MOISTURE_ON, TIMETABLE.TIMETABLE_ON, TIMETABLE.INTERVAL_TIME ,TIMETABLE.FROM_TIME FROM SETTINGS '
             query_join = 'INNER JOIN TIMETABLE ON SETTINGS.ID_SETTINGS = TIMETABLE.ID_SETTINGS '
-            query_where = 'WHERE SETTINGS.PRODUCT_KEY = %s AND TIMETABLE.INTERVAL_TIME = %s AND TIMETABLE.TIMETABLE_TYPE = "soilMoisture"'
-            data = executeQuery(query_select + query_join + query_where, (product_key, interval), True)
+            query_where = 'WHERE SETTINGS.PRODUCT_KEY = %s AND TIMETABLE.TIMETABLE_TYPE = "soilMoisture"'
+            args = (product_key,)
+            if interval:
+                query_where = 'WHERE SETTINGS.PRODUCT_KEY = %s AND TIMETABLE.INTERVAL_TIME = %s AND TIMETABLE.TIMETABLE_TYPE = "soilMoisture"'
+                args = (product_key, interval)
+            data = executeQueryData(query_select + query_join + query_where, args, True)[0]
             return jsonify(data)
         # HTTP status code 404 Not Found (Greenhouse does not exist)
         return Response(status=404)
@@ -307,17 +340,38 @@ def soil_moisture_settings_time1():
 def light_settings():
     product_key = request.args.get('product_key')
     interval = request.args.get('interval')
-    if product_key and interval:
-        if executeQuery('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
-            query_select = 'SELECT TIMETABLE.TIMETABLE_ON, TIMETABLE.FROM_TIME, TIMETABLE.TO_TIME FROM SETTINGS '
+    if product_key:
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
+            query_select = 'SELECT TIMETABLE.TIMETABLE_ON, TIMETABLE.INTERVAL_TIME, TIMETABLE.FROM_TIME, TIMETABLE.TO_TIME FROM SETTINGS '
             query_join = 'INNER JOIN TIMETABLE ON SETTINGS.ID_SETTINGS = TIMETABLE.ID_SETTINGS '
-            query_where = 'WHERE SETTINGS.PRODUCT_KEY = %s AND TIMETABLE.INTERVAL_TIME = %s AND TIMETABLE.TIMETABLE_TYPE = "light"'
-            data = executeQuery(query_select + query_join + query_where, (product_key, interval), True)
+            query_where = 'WHERE SETTINGS.PRODUCT_KEY = %s AND TIMETABLE.TIMETABLE_TYPE = "light"'
+            args = (product_key,)
+            if interval:
+                query_where = 'WHERE SETTINGS.PRODUCT_KEY = %s AND TIMETABLE.INTERVAL_TIME = %s AND TIMETABLE.TIMETABLE_TYPE = "light"'
+                args = (product_key, interval)
+            data = executeQueryData(query_select + query_join + query_where, args, True)[0]
             return jsonify(data)
          # HTTP status code 404 Not Found (Greenhouse does not exist)
         return Response(status=404)
     # HTTP status code 400 Bad Request (please enter all fields)
     return Response(status=400)
+
+@app.route('/greenhouse/settings', methods=['GET'])
+def settings():
+    product_key = request.args.get('product_key')
+    if product_key:
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM SETTINGS WHERE PRODUCT_KEY = %s)', (product_key,))[0][0]:
+            query_select = 'SELECT * FROM SETTINGS '
+            query_join = 'INNER JOIN TIMETABLE ON SETTINGS.ID_SETTINGS = TIMETABLE.ID_SETTINGS '
+            query_where = 'WHERE SETTINGS.PRODUCT_KEY = %s'
+            data = executeQueryData(query_select + query_join + query_where, (product_key,), True)
+            return jsonify(data)
+        # HTTP status code 404 Not Found (Greenhouse does not exist)
+        return Response(status=404)
+    # HTTP status code 400 Bad Request (please enter all fields)
+    return Response(status=400)
+
+
 
 # Creates a new user into the DB when recieve a get or post
 # Is working
@@ -409,13 +463,14 @@ def update_user():
 
 # is working
 @app.route('/user/login', methods=['POST'])
+@cross_origin()
 def user_login():
     email = request.form.get('e-mail')
     password = request.form.get('password')
     if email and password:
         print(email)
         print(password)
-        if executeQuery('SELECT EXISTS (SELECT 1 FROM TBL_USER WHERE EMAIL = %s)', (email,))[0][0]:
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM TBL_USER WHERE EMAIL = %s)', (email,))[0][0]:
             if check_password(email, password):
                 # HTTP status code 200 OK
                 return Response(status=200)
@@ -427,10 +482,14 @@ def user_login():
 # is Working
 @app.route('/user/information/first-name', methods=['GET'])
 def user_first_name():
-    email = request.args.get('e-mail')
+    if request.method == 'POST':
+        email = request.form.get('e-mail')
+    else:
+        email = request.args.get('e-mail')
+
     if email:
-        if executeQuery('SELECT EXISTS (SELECT 1 FROM TBL_USER WHERE EMAIL = %s )', (email,))[0][0]:
-            return executeQuery('SELECT FIRST_NAME FROM TBL_USER WHERE EMAIL = %s', (email,))[0][0]
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM TBL_USER WHERE EMAIL = %s )', (email,))[0][0]:
+            return executeQueryData('SELECT FIRST_NAME FROM TBL_USER WHERE EMAIL = %s', (email,))[0][0]
         # HTTP status code 404 Not Found (e-mail does not exist)
         return Response(status=404)
     # HTTP status  code 400 Bad Request (please enter all fields)
@@ -439,19 +498,35 @@ def user_first_name():
 # is Working
 @app.route('/user/information/last-name', methods=['GET'])
 def user_last_name():
-    email = request.args.get('e-mail')
+    if request.method == 'POST':
+        email = request.form.get('e-mail')
+    else:
+        email = request.args.get('e-mail')
+
     if email:
-        if executeQuery('SELECT EXISTS (SELECT 1 FROM TBL_USER WHERE EMAIL = %s)', (email,))[0][0]:
-            return executeQuery('SELECT LAST_NAME FROM TBL_USER WHERE EMAIL = %s', (email,))[0][0]
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM TBL_USER WHERE EMAIL = %s)', (email,))[0][0]:
+            return executeQueryData('SELECT LAST_NAME FROM TBL_USER WHERE EMAIL = %s', (email,))[0][0]
         # HTTP status code 404 Not Found (e-mail does not exist)
         return Response(status=404)
     # HTTP status  code 400 Bad Request (please enter all fields)
     return Response(status=400)
     
+@app.route('/user/information', methods=['GET'])
+def user_information():
+    if request.method == 'POST':
+        email = request.form.get('e-mail')
+    else:
+        email = request.args.get('e-mail')
 
-def main():   
+    if email:
+        if executeQueryData('SELECT EXISTS (SELECT 1 FROM TBL_USER WHERE EMAIL = %s)', (email,))[0][0]:
+            data = executeQueryData('SELECT LAST_NAME, FIRST_NAME FROM TBL_USER WHERE EMAIL = %s', (email,))
+            return jsonify(data)
+        # HTTP status code 404 Not Found (e-mail does not exist)
+        return Response(status=404)
+    # HTTP status  code 400 Bad Request (please enter all fields)
+    return Response(status=400)
+
+if __name__ == "__main__":
     app.run(host="0.0.0.0")
     
-
-
-main()
