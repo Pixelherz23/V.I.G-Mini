@@ -1,8 +1,4 @@
-/*
-   TODO
-   for buisness logic, default  setting for XYcontrol to false
 
-*/
 //To disable pragma messages on compile
 //include this Before including FastLED.h
 #define FASTLED_INTERNAL
@@ -27,7 +23,7 @@ const int NUMBER_OF_LEDS = 20;
 unsigned long intervalOfSendData = 600000;//10MIn
 unsigned long pastTimeSend = 0;
 
-unsigned long intervalOfGetData = 30000;//30sekunden
+unsigned long intervalOfGetData = 10000;//30sekunden
 unsigned long pastTimeGet = 0;
 
 unsigned long intervalOfGetTime = 10000;//10sekunden
@@ -38,28 +34,22 @@ const char * SSID_D = "Vodafone-523C";
 const char * PASSWORD =  "XXX";
 const String SERVER_URL = "https://vig-mini.ddns.net";
 
-
 HTTPClient http;
 JsonObject settingsObj;
 int temp;
 int mois;
 int hum;
 
-//TODO rebuild themeVar to array because of intervals
-
-
 int minSoilMois = 0;
 boolean istWateringControlOn = false;
 boolean isWaterTimeTableOn = false;
-boolean alreadyWatered = false;
+boolean alreadyWatered = false; //flag for watertimetable
 String waterringTimestamp = "";
-
-
 
 int tempLimit = 24;
 boolean isTempControlOn = false;
 
-String timestamp = "12:00:00";
+String timestamp = "";
 
 String fromTime = "";
 String toTime = "";
@@ -78,7 +68,7 @@ CRGB leds[NUMBER_OF_LEDS];
 
 //Deklarierung von Funktionen
 
-String requestTimeStamp();
+void requestTimeStamp();
 void requestSettings();
 void sendData();
 void connectToWifi();
@@ -87,10 +77,11 @@ int getMoisture();
 float getTemp();
 float getHum();
 
+void deactivateFan();
 void activateFan();
 void tempControl();
 void turnLightsOn(String color);
-void turnLightsOff(); 
+void turnLightsOff();
 void controlLights(String from, String till);
 void watering();
 void wateringControlByValue();
@@ -100,27 +91,29 @@ boolean checkForHTTPError(int errorCode, String errorMsg);
 void printVars();
 
 void setup() {
+  Serial.begin(9600);
+
   connectToWifi();
-
-
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUMBER_OF_LEDS);
   dht.setup(DHT11_PIN, DHTesp::DHT11);
   pinMode(FAN_PIN, OUTPUT);
+  pinMode(MOIS_SENSOR_PIN, OUTPUT);
   pinMode(WATER_PUMP_PIN, OUTPUT);
-  Serial.begin(9600);
+  turnLightsOff();
+  deactivateFan();
+  digitalWrite(WATER_PUMP_PIN, LOW);
 
 }
 
 
 void loop() {
-
-
   //==Business-logic===
+
   temp = (int)getTemp();
   mois = (int)getMoisture();
   hum = (int)getHum();
   if (WiFi.status() == WL_CONNECTED) {
-
+    requestTimeStamp();
     unsigned long currentMillis = millis();
     if ((currentMillis - pastTimeSend ) > intervalOfSendData) //send data every 10minuts
     {
@@ -134,89 +127,87 @@ void loop() {
       requestSettings();
 
     }
-    unsigned long currentMillis3 = millis();
-    if ((currentMillis3 - pastTimeGet ) > intervalOfGetTime) //requestCurrentTimeEr every 10 seconds
-    {
-      pastTimeOfTime = currentMillis3;
-      timestamp = requestTimeStamp();
 
-    }
   } else {
     connectToWifi();
 
   }
+
+  printVars();
   tempControl();
   controlLights(fromTime, toTime);
-  wateringControlByValue();
-  wateringControlByTime(waterringTimestamp);
 
+  if (istWateringControlOn == true) {
+    if (isWaterTimeTableOn == false) {
+      alreadyWatered = false; //need to be tested
+      wateringControlByValue();
+    } else if (isWaterTimeTableOn == true) {
+      wateringControlByTime(waterringTimestamp);
+    }
+  }
 
   //==Buiness-Logic-End===
 
 
   //==Test-Logic==
-  /*
-    requestSettings();
-    printVars();
-  */
-  //test();
+  //testComponents();
+  //activateFan();
+  //delay(3000);
+  //Serial.println("Fan ist aus");
+  //deactivateFan();
+  //delay(3000);
+  //sendData();
+  //delay(100);
+  Serial.println("Begin");
+  timestamp = "13:00:00" ;//pumpe an
+  wateringControlByTime("12:00:00");
+  alreadyWatered = false;
+  delay(5000);
+  timestamp = "12:00:00";//pumpe aus
+  wateringControlByTime("13:00:00");
+  delay(5000);
+  timestamp = "15:00:00"; //pumpe an
+  wateringControlByTime("12:00:00");
+  delay(5000);
+  timestamp = "23:57:00"; //pumpe aus reset var
+  wateringControlByTime("15:00:00");
+  delay(5000);
 
+  timestamp = "15:00:00";//pumpe an
+  wateringControlByTime("13:00:00");
+  delay(5000);
 
-
- // delay(5000);
 
   //==TEst-Logic-End==
-
-
-}
-
-String requestTimeStamp() {
-  Serial.println("Request Time wird ausgeführt");
-  String serverpath = SERVER_URL + "/time";
-  http.begin(serverpath);
-  int httpResponseCode = http.GET();
-  const char* timestamp = NULL;
-  if (httpResponseCode > 0) {
-
-    String response = http.getString();
-    timestamp = response.c_str();
-
-  } else {
-
-
-    Serial.printf("Error while request Time %s \n", http.errorToString(httpResponseCode).c_str()); // httpClient.errorToString(statusCode).c_str()
-    Serial.println(httpResponseCode);
-
-  }
-
-  return String(timestamp);
-
-
 
 }
 
 /*
-  void test() {
-  HTTPClient http;
+   ESP32 has no internal clock. This function request a timestamp from server
+   tested
+*/
+void requestTimeStamp() {
+  Serial.println("Request Time wird ausgeführt");
+  String serverpath = SERVER_URL + "/time";
+  http.begin(serverpath);
+  int httpResponseCode = http.GET();
+  if (httpResponseCode > 0) {
 
-  // Send request
-  http.begin(SERVER_URL + "/greenhouse/settings/temperature?product_key=" + GEWAECHSHAUS_ID);
-  http.GET();
+    String response = http.getString();
+    http.end();
 
-  // Parse response
-  DynamicJsonDocument doc(2048);
-  deserializeJson(doc, http.getString());
+    timestamp = response.c_str();
+  } else {
+    Serial.printf("Error while request Time %s \n", http.errorToString(httpResponseCode).c_str());
+    Serial.println(httpResponseCode);
 
-  delay(500);
-  // Read values
-  Serial.println(doc["MAX_TEMPERATURE"].as<int>());
-  int t = doc["MAX_TEMPERATURE"].as<int>();
-  Serial.println(t);
-  serializeJsonPretty(doc, Serial);
-  // Disconnect
-  http.end();
   }
 
+}
+
+/*
+    requests the server for the user settings
+    tested
 */
 void requestSettings() {
 
@@ -225,23 +216,25 @@ void requestSettings() {
   String settings = "";
   int httpResponseCode = NULL;
   HTTPClient http;
+  //URLs to the different interfaces
   String pathTemp = SERVER_URL + "/greenhouse/settings/temperature?product_key=" + GEWAECHSHAUS_ID;
   String pathMoisVal = SERVER_URL + "/greenhouse/settings/soil-moisture/value?product_key=" + GEWAECHSHAUS_ID + "&interval=1";
   String pathSoilMoisTime = SERVER_URL + "/greenhouse/settings/soil-moisture/time?product_key=" + GEWAECHSHAUS_ID;
   String pathLight = SERVER_URL + "/greenhouse/settings/light?product_key=" + GEWAECHSHAUS_ID;
   DynamicJsonDocument doc(2048);
-
+  //connect to server
   http.begin(pathTemp);
   httpResponseCode = http.GET();
 
+  //check if connection failed. If so, checkForHTTPError prints the error message
   if ( checkForHTTPError( httpResponseCode,  http.errorToString(httpResponseCode))) {
+    //format retrivied message to json
     DeserializationError err = deserializeJson(doc, http.getString());
     delay(500);
     if (err) {
       Serial.print(F("deserializeJson() failed: "));
       Serial.println(err.c_str());
     }
-
     //serializeJsonPretty(doc, Serial);
     delay(500);
     tempLimit = doc["MAX_TEMPERATURE"].as<int>();
@@ -253,8 +246,9 @@ void requestSettings() {
       isTempControlOn = false;
     }
   }
-
+  //disconnect
   http.end();
+
   http.begin(pathMoisVal);
   httpResponseCode = http.GET();
 
@@ -286,7 +280,7 @@ void requestSettings() {
       Serial.println(err.c_str());
     }
 
-    serializeJsonPretty(doc, Serial);
+    //serializeJsonPretty(doc, Serial);
     waterringTimestamp = doc["FROM_TIME"].as<String>();
 
     if (doc["SOIL_MOISTURE_ON"].as<int>() == 1) {
@@ -333,14 +327,13 @@ void requestSettings() {
 }
 
 /*
-   send Data in Json Format
+   send Data in Json Format to REST
 */
 void sendData() {
   Serial.println("send Data wird ausgeführt");
-  String serverpath = SERVER_URL + "/newMeasurements";
+  String serverpath = SERVER_URL + "/greenhouse/measurements/new";
 
-  http.begin(serverpath);
-
+  //save measurements  with keys
   StaticJsonDocument<200> doc;
   doc["product_key"] = GEWAECHSHAUS_ID;
   doc["led_status"] = ledStatus;
@@ -348,14 +341,18 @@ void sendData() {
   doc["humidity"]   = getHum();
   doc["soil_moisture"] = String(getMoisture());
 
+  //build connection
+  http.begin(serverpath);
   http.addHeader("Content-Type", "application/json");
   String requestBody;
   Serial.println("Data");
+  //convert doc to a Json Format
   serializeJson(doc, requestBody);
-  //serializeJsonPretty(doc, Serial);
-
+  //print it on console
+  serializeJsonPretty(doc, Serial);
+  //send it
   int httpResponseCode = http.POST(requestBody);
-
+  //check for error
   if (httpResponseCode > 0) {
 
     String response = http.getString();
@@ -370,14 +367,17 @@ void sendData() {
     Serial.println(httpResponseCode);
 
   }
+  http.end();
 
 }
-
+/*
+   create a wifi connection
+*/
 void connectToWifi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(SSID_D, PASSWORD);
   unsigned long timer = millis();
-
+  //try to connect to wifi till connection established or the the timeout hits
   while (WiFi.status() != WL_CONNECTED && ((millis() - timer) < 5000)) {
     delay(1000);
     Serial.println("Connecting to WiFi...");
@@ -413,27 +413,35 @@ float getHum() {
 }
 
 void activateFan() {
+  Serial.println("Fan ist an");
   digitalWrite(FAN_PIN, HIGH);
+
 }
 void deactivateFan() {
+  Serial.println("Fan ist aus");
   digitalWrite(FAN_PIN, LOW);
 
 }
 
+//tested
 void tempControl() {
+  Serial.println("TempControll wird ausgeführt");
   if (isTempControlOn == NULL || isTempControlOn == false) {
     deactivateFan();
+    Serial.println("Lüfter ist aus weil isTempControlOn null oder isTempControlOn false");
   } else {
     if (temp > tempLimit) {
-      activateFan();
 
+      activateFan();
+      Serial.println("Lüfter ist an");
     } else {
       deactivateFan();
+      Serial.println("Lüfter ist aus");
     }
 
   }
 }
-
+//tested
 void turnLightsOn(String color) {
   ledStatus = 1;
   int ledDelay = 20;
@@ -461,6 +469,7 @@ void turnLightsOn(String color) {
 
   }
 }
+//tested
 void turnLightsOff() {
   ledStatus = 0;
   int ledDelay = 20;
@@ -472,12 +481,18 @@ void turnLightsOff() {
 
   }
 }
+
+/*
+   turn light on if timestamp is between the from-time and till-time
+   tested
+*/
 void controlLights(String from, String till) {
   if (from == NULL || from == "" || till == NULL || till == ""  ) {
     Serial.println("[ERROR] Zeit für LED null oder nicht da");
   } else {
     if ((isLightTimeTableOn == true)) {
-      if ( (from <= timestamp) &&  (timestamp >= till) ) {
+      if ( (from <= timestamp) &&  (timestamp <= till) ) {
+        Serial.println("LEDs an");
         turnLightsOn("bluePurple");
 
       } else {
@@ -485,48 +500,53 @@ void controlLights(String from, String till) {
       }
 
 
+    } else {
+      turnLightsOff();
     }
   }
 }
 void watering() {
-  digitalWrite(WATER_PUMP_PIN, HIGH);  // Schaltet ein
+  Serial.println("Pumpe ist an");
+  digitalWrite(WATER_PUMP_PIN, HIGH);
   delay(5000);
-  digitalWrite(WATER_PUMP_PIN, LOW);   // Schaltet aus
-  delay(5000);
-}
-void wateringControlByValue() {
+  Serial.println("Pumpe ist aus");
+  digitalWrite(WATER_PUMP_PIN, LOW);
 
-  if (istWateringControlOn == true && isWaterTimeTableOn == false) {
-    if (minSoilMois != NULL) {
-      if (minSoilMois >= mois) {
-        watering();
-      }
+}
+//tested
+void wateringControlByValue() {
+  Serial.println("Watering by Val wird ausgeführt");
+  if (minSoilMois != NULL) {
+    if (minSoilMois >= mois) {
+      watering();
     }
   }
+
 }
-
-
+/*
+   water once a day if timestamp is bigger or equals than from
+   tested
+*/
 void wateringControlByTime(String from) {
-  String wall = "23:50:00";
+  Serial.println("Watering by Time wird ausgeführt");
+  String wall = "23:55:00";
   String wall2 = "23:59:59";
   if (from == NULL || from == "") {
     Serial.println("[ERROR] Zeit für Pumpe null oder nicht da");
   } else {
-    if ((istWateringControlOn == true) && (isWaterTimeTableOn == true)) {
-      if ((!((wall < timestamp ) && (timestamp < wall2))) && timestamp >= from && alreadyWatered == false) {
-        watering();
-        alreadyWatered = true;
-      }
-      //potenieller Bug besser wäre eine art get Day
-
-      if ((wall < timestamp ) && (timestamp < wall2)) {
-        alreadyWatered = false;
-      }
-
+    if ((!((wall < timestamp ) && (timestamp < wall2))) && timestamp >= from && alreadyWatered == false) {
+      watering();
+      alreadyWatered = true;
+    }
+    //reset flag for the next day
+    if ((wall < timestamp ) && (timestamp < wall2)) {
+      Serial.println("reset");
+      alreadyWatered = false;
     }
   }
-
 }
+
+
 
 boolean checkForHTTPError(int errorCode, String errorMsg) {
   boolean everthingOK = true;
@@ -540,15 +560,15 @@ boolean checkForHTTPError(int errorCode, String errorMsg) {
 
 void printVars() {
 
-  Serial.print("VAriabeln");
-  Serial.println("Auzeichnung der Geräte: ");
+  Serial.print("Variabeln");
+  Serial.println("===============");
   Serial.print("Temp: ");
   Serial.println(temp);
   Serial.print("mois: ");
   Serial.println(mois);
-  Serial.print("mois: ");
+  Serial.print("hum: ");
   Serial.println(hum);
-  Serial.println("===============\n");
+  Serial.println("===============");
 
 
 
@@ -560,34 +580,39 @@ void printVars() {
   Serial.println(isWaterTimeTableOn);
   Serial.print("waterringTimestamp: ");
   Serial.println(waterringTimestamp);
-
+  Serial.println("===============\n");
   Serial.print("tempLimit: ");
   Serial.println(tempLimit);
   Serial.print(" isTempControlOn: ");
   Serial.println(isTempControlOn);
+  Serial.println("===============\n");
   Serial.print("fromTime: ");
   Serial.println(fromTime);
   Serial.print("toTime: ");
   Serial.println(toTime);
   Serial.print("isLightTimeTableOn: ");
   Serial.println(isLightTimeTableOn);
-
+  Serial.println("===============");
   Serial.print("timestamp: ");
   Serial.println(timestamp);
-  Serial.println("===============\n");
+  Serial.println("===============");
 
 
 
 }
 
-void testComponents(){
-activateFan();
-delay(5000);
-deactivateFan();
-turnLightsOn("blue");
-delay(5000);
-turnLightsOff();
-watering();
+void testComponents() {
+  delay(5000);
+  activateFan();
+  delay(5000);
+  Serial.println("Fan aus");
+  deactivateFan();
+  delay(1000);
+  turnLightsOn("blue");
+  delay(5000);
+  turnLightsOff();
+  watering();
+
   Serial.println("Auzeichnung: ");
   Serial.print("Temp: ");
   Serial.println(getTemp());
