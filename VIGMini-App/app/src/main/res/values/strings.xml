@@ -18,4 +18,11 @@
     <string name="save">Speichern</string>
     <string name="temperatur">Temperatur</string>
     <string name="humidity">Luftfeuchtigkeit</string>
+    <string name="temperaturMax">40°C</string>
+    <string name="temperatureMin">20°C</string>
+    <string name="value">Grenzwert</string>
+    <string name="minus">-</string>
+    <string name="from">Von</string>
+    <string name="to">Bis</string>
+    <string name="light">Licht</string>
 </resources>

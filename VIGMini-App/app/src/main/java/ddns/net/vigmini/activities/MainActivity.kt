@@ -31,7 +31,7 @@ open class MainActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.IO) {
             try{
                 // email ist hard coded
-                val response = api.getGreenhouses("lukas-beckmann@gmx.net").awaitResponse()
+                val response = api.getGreenhouses("abcdef123@gmx.de").awaitResponse()
                 if (response.isSuccessful){
                     val data = response.body()!!
 
