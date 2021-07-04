@@ -60,7 +60,6 @@ class GreenhouseSettingsAdapter (private val settings: GreenhouseSettings) : Rec
                 }else{
                     2
                 }
-
             }
             else -> 3
         }

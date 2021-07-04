@@ -25,4 +25,14 @@
     <string name="from">Von</string>
     <string name="to">Bis</string>
     <string name="light">Licht</string>
+    <string-array name="interval">
+        <item>24 h</item>
+        <item>7 Tage</item>
+        <item>30 Tage</item>
+    </string-array>
+    <string-array name="chart">
+        <item>Kurvendiagramm</item>
+        <item>Säuleniagramm</item>
+        <item>Tabelle</item>
+    </string-array>
 </resources>
