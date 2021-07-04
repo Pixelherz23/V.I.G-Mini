@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="de">
+
+
+<head>
+    <meta name="application-name" content="Uebersicht">
+    <meta name="description" content="Uebersichtsseite">
+    <meta name="author" content="Nils Jollet, Kai Stieler, Lukas Beckmann">
+    <meta name="Viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/general.css">
+    <link rel="stylesheet" type="text/css" href="css/Uebersicht.css">
+    <title>Uebersichtsseite</title>
+</head>
+
+
+<body>
+    
+    <header>
+        <picture>
+            <source media="(min-width: 1920px)" srcset="pics/1920x200.png">
+            <source media="(min-width: 1280px)" srcset="pics/1280x133.png">
+            <img src="pics/1280x133.png" alt="Kann nicht dargestellt werden">        
+        </picture>
+
+        <nav>
+            <p id="welcome"></p>
+            <a id="Uebersicht" href="Uebersicht.html">Übersicht</a>
+            <a href="News.html">News</a>
+            <a href="Hilfe.html">Hilfe</a>
+            <a href="Acc-Einstellungen.html">Profil</a>
+            <!--TODO: Abmelden Funktion-->
+            <a onclick="logOut()" >Abmelden</a>
+        </nav> 
+        <script src="js/LoginAndLogout.js"></script>
+        <script src="js/Uebersicht.js"></script>
+        <script>autoRedirect();</script>
+    </header>
+
+    <p id="titel">Übersicht:</p>
+    <section id="GWEintraegeArea">
+      
+    </section>
+
+    <section id="hinzufuegen">
+        <p>Gewächshaus hinzufügen:</p>
+        <button onclick="openForm()" style="border-radius: 50%">
+            + 
+        </button>
+        <div class="form-popup" id="KeyForm">
+            <form onsubmit="return false" class="form-container">
+                
+                <p>Bitte den Produktkey des Gewächshauses eingeben:</p>
+
+                <input id="produktkey" type="text" placeholder="Produktkey eingeben..." name="produktkey" required>
+
+                <button onclick="loginNewGW()">Hinzufügen</button>
+                <button id="xbutton" onclick="closeForm()">x</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        var inputcounter = 0;
+        function changeGWName(id,area){
+            console.log(area)
+            var gwnamediv = document.getElementsByName(id);
+            var articlediv = document.getElementById(area);
+            console.log("div: ", gwnamediv[0], articlediv);
+    
+            var form = document.createElement("form");
+            form.setAttribute("onsubmit", "return false");
+            
+
+            var input = document.createElement("input");
+            input.setAttribute("id", "input"+inputcounter)
+            input.setAttribute("class", "gwnameinput");
+
+            var button = document.createElement("button");
+            button.setAttribute("id", gwnamediv[0].id)
+            button.setAttribute("class", "gwnamesave");
+            button.setAttribute("type","button")
+            button.setAttribute("name", "input" + inputcounter)
+            button.setAttribute("onclick", "loginNewGWName(this.name,this.id)")
+            button.innerHTML = "save";
+            
+            form.appendChild(input);
+            form.appendChild(button);
+            inputcounter++;
+
+            articlediv.replaceChild(form, gwnamediv[0]);
+
+            
+
+        }
+
+        function loginNewGWName(inputid,pkey){
+            var newname = document.getElementById(inputid).value;
+            var p_key = pkey;
+            var url ='https://vig-mini.ddns.net/greenhouse/update/name'
+            
+
+            var body = {
+                'product_key': p_key,
+                'name': newname
+            }
+
+            console.log("body:" , body)
+            if(checkGWName(document.getElementById(inputid))){
+                sendrequestNewGWName(body, url);
+            }else{
+
+            }
+            
+        }
+
+
+        function checkGWName(name){
+            if(name.value.length <= 25){
+                return true;
+            }else{
+                alert("Maximale Länge für den Gewächshausnamen beträgt 25 Zeichen")
+                return false;
+            }
+        }
+
+        function sendrequestNewGWName(body, url){
+            var formBody = [];
+            for (var property in body) {
+                var encodedKey = encodeURIComponent(property);
+                var encodedValue = encodeURIComponent(body[property]);
+                formBody.push(encodedKey + "=" + encodedValue);
+            }
+
+            formBody = formBody.join("&");
+            url = url + "?" + formBody;
+            console.log("body joined, body:", formBody);
+            
+
+            fetch(url, {
+                method: 'GET',
+                mode: "cors",
+                headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                
+            })
+            .then(response =>{
+                if(response.status == 200){
+                    alert("Gewächshausnamen erfolgreich geändert")
+                    window.location = "./Uebersicht.html"
+                }else{
+                    alert("fehler")
+                }
+            })            
+        }
+
+        
+
+        function openForm(){
+            document.getElementById("KeyForm").style.display = "inline-block";
+        }
+
+        function closeForm(){
+            document.getElementById("KeyForm").style.display = "none";
+        }
+        var counter = 0;
+        var counter2 = -1;
+        function GWLaden(data){ 
+            
+
+            let article = document.createElement("article");
+            article.setAttribute("id", counter2);
+            document.getElementById("GWEintraegeArea").appendChild(article);
+
+            let gwname = document.createElement("p"); 
+            gwname.setAttribute("id", data.PRODUCT_KEY);
+            gwname.setAttribute("class", "gwname");
+            gwname.setAttribute("name", counter);
+            gwname.setAttribute("onclick", "redirectDetails(this)");
+            let gwnameText = document.createTextNode(data.NAME);
+            gwname.appendChild(gwnameText);
+            article.appendChild(gwname);
+
+
+            var stift = document.createElement("a");
+            stift.setAttribute("id", counter);
+            stift.setAttribute("name", counter2);
+            counter++;
+            counter2--;
+            stift.setAttribute("onclick", "changeGWName(this.id, this.name)" );
+            article.appendChild(stift);
+
+            var stiftimage = document.createElement("img");
+            stiftimage.setAttribute("src","pics/pen.svg");
+            stiftimage.setAttribute("height","15");
+            stiftimage.setAttribute("width", "15");
+            stift.appendChild(stiftimage);
+
+           let temp = document.createElement("p");
+           temp.setAttribute("id", data.NAME + "temp")
+           var tempText = document.createTextNode("Temp: ");
+           temp.appendChild(tempText);
+            article.appendChild(temp);
+
+           let lf = document.createElement("p");
+           lf.setAttribute("id", data.NAME + "lf")
+           var lfText = document.createTextNode("Luftfeuchtigkeit: ");
+           lf.appendChild(lfText);
+            
+           article.appendChild(lf);
+
+           let bf = document.createElement("p");
+           bf.setAttribute("id", data.NAME + "bf")
+           var bfText = document.createTextNode("Bodenfeuchtigkeit: ");
+           bf.appendChild(bfText);
+           article.appendChild(bf);
+
+           var link = document.createElement("a");
+           link.setAttribute("id", data.PRODUCT_KEY);
+            link.setAttribute("onclick", "redirectOptions(this)")
+            link.setAttribute("name", data.NAME);
+           article.appendChild(link);
+
+           var image = document.createElement("img");
+           image.setAttribute("src","pics/zahnrad.svg");
+           image.setAttribute("height","15");
+           image.setAttribute("width", "15");
+           link.appendChild(image);
+        }
+
+        function LoadGWData(name,data){
+            let temp = document.getElementById(name + "temp");
+            var tempWert = document.createTextNode(data.TEMPERATURE +" °C");
+            temp.appendChild(tempWert);
+
+            let lf = document.getElementById(name + "lf")
+            var lfWert = document.createTextNode(data.HUMIDITY +" %");
+            lf.appendChild(lfWert);
+
+            let bf = document.getElementById(name +"bf");
+            var bfWert = document.createTextNode(data.SOIL_MOISTURE+ " %");
+            bf.appendChild(bfWert);
+
+
+        }
+
+        function loginLoad(){
+            var email = localStorage.getItem("email");
+            var url = 'https://vig-mini.ddns.net/greenhouse/all';
+            
+
+            var body = {
+                'e-mail': email,
+            }
+            sendrequestLoad(body, url);
+        }
+
+        
+        sendRequestFirstname();
+
+        function loginNewGW(){
+            var email = localStorage.getItem("email");
+            var pkey = document.getElementById("produktkey").value;
+            var url = 'https://vig-mini.ddns.net/greenhouse/activate';
+            var body = {
+                'e-mail': email,
+                'product_key': pkey
+            }
+            sendrequestNewGW(body, url);
+        }
+
+        loginLoad();
+
+        loadName(document.getElementById("welcome"));
+    </script>
+</body>
+
+<footer>
+    <a href="footer/Impressum.html">Impressum</a>
+    <a href="footer/Datenschutz.html">Datenschutzerklärung</a>
+    <a href="footer/Kontakt.html">Kontaktinformationen</a>
+    &copy; Copyright 2021 VIGMini
+</footer>

@@ -1,35 +1,215 @@
-#bodenfeuchtigkeit{
-    display: inline;
-    font-size: large;
-    margin-left: 120px;
-}
-
-body section form{
-    display: inline;
-}
-
 body h1{
     text-decoration: underline;
 }
 
-body section form button{
-    margin-left: 400px;
+footer{
+    position: relative;
+    margin-bottom: -100px;
 }
 
-#temperatur{
+.gridwrapper{
+    display: grid;
+    grid-gap: 3px;
+    grid-template-columns: minmax(100px,400px),minmax(250px,400px),minmax(100px,150px),minmax(100px,150px);
+    grid-template-rows:repeat(4,minmax(50px, 100px));
+}
 
-    display: inline;
+#btitle{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    place-self: center;
     font-size: large;
-    margin-left: 120px;
+}
 
+#bform{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    place-self: center;
+}
+
+#bswitch{
+    grid-column-start: 4;
+    grid-column-end: 5;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    place-self: center;
+}
+
+#ttitle{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    place-self: center;
+    font-size: large;
+}
+
+
+#tform{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    place-self: center;
+}
+
+#tswitch{
+    grid-column-start: 4;
+    grid-column-end: 5;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    place-self: center;
+}
+
+
+#ltitle{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 4;
+    place-self: center;
+    font-size: large;
+
+}
+
+#lform{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 4;
+    place-self: center;
     
 }
 
-body section div{
-    display: inline;
-    margin-right: 47px;
+#lswitch{
+    grid-column-start: 4;
+    grid-column-end: 5;
+    grid-row-start: 3;
+    grid-row-end: 4;
+    place-self: center;
 }
 
-#tsave{
-    margin-left: 396px;
+#save{
+    grid-column-start: 3;
+    grid-column-end: 4;
+    grid-row-start: 4;
+    grid-row-end: 5;
+    place-self: center;
+    font-size: x-large;
+}
+
+
+
+
+.onoffswitch {
+    position: relative; width: 90px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.onoffswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+.onoffswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+    content: "ON";
+    padding-left: 10px;
+    background-color: blue; color: #FFFFFF;
+}
+.onoffswitch-inner:after {
+    content: "OFF";
+    padding-right: 10px;
+    background-color: #EEEEEE; color: #999999;
+    text-align: right;
+}
+
+.onoffswitch-switch {
+    display: block; width: 18px; margin: 6px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 56px;
+    border: 2px solid #999999; border-radius: 20px;
+    transition: all 0.3s ease-in 0s; 
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+    margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+    right: 0px; 
+}
+
+
+
+.werteuhrzeitswitchclass {
+    position: relative; width: 90px;
+    -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.werteuhrzeitswitch-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.werteuhrzeitswitch-label {
+    display: block; overflow: hidden; cursor: pointer;
+    border: 2px solid #999999; border-radius: 20px;
+}
+.werteuhrzeitswitch-inner {
+    display: block; width: 200%; margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+}
+.werteuhrzeitswitch-inner:before, .werteuhrzeitswitch-inner:after {
+    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+    font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+    box-sizing: border-box;
+}
+.werteuhrzeitswitch-inner:before {
+    content: "WERTE";
+    padding-left: 10px;
+    background-color: blue; color: #FFFFFF;
+}
+.werteuhrzeitswitch-inner:after {
+    content: "ZEIT";
+    padding-right: 10px;
+    background-color: #EEEEEE; color: #999999;
+    text-align: right;
+}
+.werteuhrzeitswitch-switch {
+    display: block; width: 18px; margin: 6px;
+    background: #FFFFFF;
+    position: absolute; top: 0; bottom: 0;
+    right: 56px;
+    border: 2px solid #999999; border-radius: 20px;
+    transition: all 0.3s ease-in 0s; 
+}
+.werteuhrzeitswitch-checkbox:checked + .werteuhrzeitswitch-label .werteuhrzeitswitch-inner {
+    margin-left: 0;
+}
+.werteuhrzeitswitch-checkbox:checked + .werteuhrzeitswitch-label .werteuhrzeitswitch-switch {
+    right: 0px; 
+}
+
+
+#werteuhrzeitswitch{
+    grid-column-start: 3;
+    grid-column-end: 4;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    place-self: center;
+
 }

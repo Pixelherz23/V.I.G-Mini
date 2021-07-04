@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+
+
+<head>
+    <meta name="application-name" content="Anmeldung">
+    <meta name="description" content="Anmeldung">
+    <meta name="author" content="Nils Jollet, Kai Stieler, Lukas Beckmann">
+    <meta charset="UTF-8">
+    <meta name="Viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/general.css">
+    <link rel="stylesheet" type="text/css" href="css/Anmeldung.css">
+    <title>Anmeldung</title>
+</head>
+
+<body>
+    <header>
+        <picture>
+            <source media="(min-width: 1920px)" srcset="pics/1920x200.png">
+            <source media="(min-width: 1280px)" srcset="pics/1280x133.png">
+            <img src="pics/1280x133.png" alt="Kann nicht dargestellt werden">     
+        </picture>
+    </header>
+    
+    <section>
+        <p>Anmelden</p>
+        <form >
+
+            <label for="email">E-Mail Adresse:</label>
+            <input class="boxdesign" type="email" id="e-mail" name="e-mail"><br>
+
+            <label id="passwortlabel" for="passwort">Passwort:</label><br>
+            <input class="boxdesign" type="password" id="password" name="password">
+
+            <button onclick="login(event)">Anmelden</button>
+
+            <script  language='javascript' type="text/javascript">
+                function login(e){
+                    var email = document.getElementById('e-mail').value;
+                    var password = document.getElementById('password').value;
+                    var url = 'https://vig-mini.ddns.net/user/login';
+
+                    var body = {
+                        'e-mail': email,
+                        'password': password
+                    }
+                    e.preventDefault();
+                    sendrequest(body, url);
+                }
+
+                function sendrequest(body, url){
+                
+                    console.log("starting request");
+                    var formBody = [];
+                    for (var property in body) {
+                        var encodedKey = encodeURIComponent(property);
+                        var encodedValue = encodeURIComponent(body[property]);
+                        formBody.push(encodedKey + "=" + encodedValue);
+                    }
+                    
+                    formBody = formBody.join("&");
+                    console.log("body joined, body:", formBody);
+                    
+
+                    fetch(url, {
+                        method: 'POST',
+                        mode: "cors",
+                        headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formBody
+                        
+                    })
+                    .then(response => {
+                        if(response.status == 200){
+                            //window.location = "http://79.231.136.119:80/Uebersicht.html";
+
+                            var authentification;
+                            var email = document.getElementById('e-mail').value;
+                            var password = document.getElementById('password').value;
+                            authentification = btoa(email + ":" + password);
+                            console.log(authentification);
+                            localStorage.clear();
+
+                            localStorage.setItem("auth", authentification);
+                            localStorage.setItem("email", email);
+                            window.location = "./Uebersicht.html"
+                            console.log("localStorage: ", localStorage.getItem("auth"));
+                        }else{
+                            alert("E-Mail oder Passwort falsch!");
+                        }
+                    })
+                }
+
+            </script>
+        </form>
+
+        <a href="pwVergessen.html">Passwort vergessen?</a>
+        <div id="line"></div>
+        <p id="neuhier">Neu hier?</p>
+        <a href="Registrieren.html" id="register">Registrieren</a>
+    </section>
+
+
+</body>
+
+<footer>
+    <a href="footer/Impressum.html">Impressum</a>
+    <a href="footer/Datenschutz.html">Datenschutzerklärung</a>
+    <a href="footer/Kontakt.html">Kontaktinformationen</a>
+    &copy; Copyright 2021 VIGMini
+</footer>

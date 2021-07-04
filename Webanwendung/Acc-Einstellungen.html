@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="de">
+
+
+<head>
+    <meta name="application-name" content="Acc-Einstellungen">
+    <meta name="description" content="Acc-Einstellungen">
+    <meta name="author" content="Nils Jollet, Kai Stieler, Lukas Beckmann">
+    <meta name="Viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/general.css">
+    <link rel="stylesheet" type="text/css" href="css/Acc-Einstellungen.css">
+    <title>Acc-Einstellungen</title>
+</head>
+
+
+<body>
+    
+    <header>
+        <picture>
+            <source media="(min-width: 1920px)" srcset="pics/1920x200.png">
+            <source media="(min-width: 1280px)" srcset="pics/1280x133.png">
+            <img src="pics/1280x133.png" alt="Kann nicht dargestellt werden">        
+        </picture>
+
+        <nav>
+            <p id="welcome"></p>
+            <a href="Uebersicht.html">Übersicht</a>
+            <a href="News.html">News</a>
+            <a href="Hilfe.html">Hilfe</a>
+            <a id="profil" href="Acc-Einstellungen.html">Profil</a>
+            <!--TODO: Abmelden Funktion-->
+            <a onclick="logOut()" >Abmelden</a>
+        </nav> 
+        <script src="js/LoginAndLogout.js"></script>
+        <script>autoRedirect();</script>
+    </header>
+    <h1>Profil:</h1>
+    <form onsubmit="return false" class="gridwrapper">
+        <div id="fn">
+            <label for="vorname">Vorname:</label><br>
+            <input class="boxdesign" required type="text" id="firstnamearea" name="vorname">
+        </div>
+        <div id="ln">
+            <label for="nachname">Nachname:</label><br>
+            <input class="boxdesign" required type="text" id="secondnamearea" name="nachname">
+        </div>
+        <div id="mail">
+            <label for="email">E-Mail Adresse:</label><br>
+            <input class="boxdesign" required type="text" id="emailarea" name="email">
+        </div>
+
+        <button onclick="optionSave()" id="savebutton">Save</button>
+        <a id="pwchange" href="./changePW.html">Passwort ändern</a>
+    </form>
+
+    <script>
+        function getUserData(){
+                    var email = localStorage.getItem("email");
+                  
+                    var url = 'https://vig-mini.ddns.net/user/information';
+
+                    var body = {
+                        'e-mail': email,
+                    }
+                   
+                    sendrequest(body, url);
+                
+
+        }
+        getUserData();
+        
+
+        function sendrequest(body, url){
+                
+                console.log("starting request");
+                var formBody = [];
+                for (var property in body) {
+                    var encodedKey = encodeURIComponent(property);
+                    var encodedValue = encodeURIComponent(body[property]);
+                    formBody.push(encodedKey + "=" + encodedValue);
+                }
+                
+                //formBody = formBody.join("&");
+                console.log("body joined, body:", formBody);
+                url = url + "?" + formBody;
+                console.log("url: ", url);
+
+                fetch(url, {
+                    method: 'GET',
+                    mode: "cors",
+                    headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                })
+                .then(response => {
+                    if(response.status == 200){
+                        response.text().then(function(text){
+                            var textlength = text.length;
+                            var data = text.slice(11,textlength-5);
+                            data = data.split(',');
+                            data[0] = data[0].slice(0, data[0].length-1);
+                            data[1] = data[1].slice(7, data[1].length-3);
+                            console.log(data[1]);
+
+                            document.getElementById("firstnamearea").value = data[1];
+                            document.getElementById("secondnamearea").value = data[0];
+                            document.getElementById("emailarea").value = localStorage.getItem("email");
+                            
+                            buffer = document.getElementById("emailarea").value;
+                        });
+                        
+                        //document.getElementById('testarea').innerHTML = response.body;
+                        
+                    }else{
+                        
+                    }
+                })
+            }
+            var buffer;
+
+            function optionSave(){
+                        console.log(buffer)
+                        var new_email = document.getElementById("emailarea").value;
+                        var email = buffer;
+                        var firstname = document.getElementById("firstnamearea").value;
+                        var secondname = document.getElementById("secondnamearea").value;
+                        
+                    
+                        var url = 'https://vig-mini.ddns.net/user/information/update';
+
+                        var body = {
+
+                            'firstname': firstname,
+                            'lastname': secondname,
+                            'e-mail': email,
+                            'new_e-mail': new_email
+                        }
+
+                        if(checkfirstname(document.getElementById("firstnamearea")) && checklastname(document.getElementById("secondnamearea"))
+                            && checkemail(document.getElementById("emailarea"))){
+                                sendrequestSave(body, url, firstname);
+                            }
+                        else{
+                            alert("Bitte Eingaben überprüfen!")
+                        }
+
+                        
+                    
+                        
+                    
+
+            }
+
+
+            function sendrequestSave(body, url, firstname){
+                
+                
+                console.log("starting request");
+                var formBody = [];
+                for (var property in body) {
+                    var encodedKey = encodeURIComponent(property);
+                    var encodedValue = encodeURIComponent(body[property]);
+                    formBody.push(encodedKey + "=" + encodedValue);
+                }
+                
+                formBody = formBody.join("&");
+                console.log("body joined, body:", formBody);
+
+                fetch(url, {
+                    method: 'POST',
+                    mode: "cors",
+                    headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formBody
+
+                })
+                .then(response => {
+                    if(response.status == 200){
+                        
+                        localStorage.setItem("email", document.getElementById("emailarea").value);
+                        console.log("funkzt")
+                        localStorage.setItem("showfirstname", firstname)
+                        window.location = "./Acc-Einstellungen.html"
+                    }else{
+                        
+                    }
+                })
+            }
+
+            /**
+             * Checks if the firstname has atleast 3 characters and it may only contain alphabets
+             * 
+             * @param {*} firstname the firstname of the user
+             * @returns returns true if the firstname input is not empty
+             */
+            function checkfirstname(firstname){
+                var allowedChars = /[a-z]+[a-z]*([-][a-z]+[a-z])?/          
+                if(firstname.value.length >= 3 && firstname.value.match(allowedChars)){
+                    return true;
+                }else{
+                    firstname.setCustomValidity("Vorname muss min. 3 Buchstaben enthalten! (keine Sonderzeichen/Zahlen)")
+                    return false;
+                }
+            }
+
+            /**
+             * Checks if the lastname has atleast 3 characters and it may only contain alphabets
+             * 
+             * @param {*} lastname the lastname of the user
+             * @returns returns true if the lastname input is not empty
+             */
+            function checklastname(lastname){
+                var allowedChars = /[a-z]+[a-z]*([-][a-z]+[a-z])?/
+                if(lastname.value.length >= 3 && lastname.value.match(allowedChars)){
+                    return true;
+                }else{
+                    lastname.setCustomValidity("Vorname muss min. 3 Buchstaben enthalten! (keine Sonderzeichen/Zahlen)");
+                    return false;
+                }
+            }
+
+            /**
+             * Checks if the email is empty or not
+             * 
+             * @param {*} email the e-mail adress of the user
+             * @returns returns true if the e-mail adress input is not empty
+             */
+            function checkemail(email){
+                if(email.value == ''){
+                    return false;
+                }else{return true;}
+            }
+
+            loadName(document.getElementById("welcome"));
+    </script>
+</body>
+
+<footer>
+    <a href="footer/Impressum.html">Impressum</a>
+    <a href="footer/Datenschutz.html">Datenschutzerklärung</a>
+    <a href="footer/Kontakt.html">Kontaktinformationen</a>
+    &copy; Copyright 2021 VIGMini
+</footer>

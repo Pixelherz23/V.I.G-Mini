@@ -1,51 +1,80 @@
-body form button{
-    background-color: rgb(7, 105, 252);
-    border-radius: 10px;
-    height: auto;
-    width: auto;
-    font-size: xx-large;
-    color: white;
-    margin-top: 200px;
-    margin-left: 675px;
-    z-index: 3;
+
+.gridwrapper{
+    justify-self: center;
+    display: grid;
+    grid-gap: 15px;
+    grid-template-columns: repeat(2,minmax(150px,600px));
+    grid-template-rows: repeat(3,minmax(50px,100px));
 }
 
-
-body form div input{
-    margin-right: 40px;
-    margin-bottom: 15px;
-    margin-top: 5px;
+.vornamegrid{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    justify-self: end;
+    align-self: center;
 }
 
-/* TODO: buttons1 untereinander */
-#buttons1{
-    padding: 10px;
-    text-align: center;
-    position: absolute;
-    left: 20%;
-    border: 1px solid white;
-    width: 25%;
-    height: 150px;
-    padding-bottom: 2em;
-    
+.nachnamegrid{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    justify-self: end;
+    align-self: center;
 }
 
-/* TODO: buttons2 neben buttons1 */
-#buttons2{
-    padding: 10px;
-    text-align: center;
-    position: absolute;
-    left: 50%;
-    border: 1px solid white;
-    width: 25%;
-    height: 150px;
-    padding-bottom: 2em;
+.emailgrid{
+
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 4;
+    justify-self: end;
+    align-self: center;
+
+}
+#pwgrid{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    align-self: center;
 }
 
+#pwzweigrid{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    align-self: center;
+}
 
 #title{
     position: relative;
-    left: 40%;
+    text-align: center;
     margin-bottom: 20px;
     text-decoration-line: underline;
+}
+
+/*Button centered bekommen*/
+#rbutton{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 4;
+
+    background-color: rgb(7, 105, 252);
+    border-radius: 10px;
+    height: 50px;
+    width: 200px;
+    font-size: xx-large;
+    color: white;
+    margin-left: 10px;
+    align-self: center;
+}
+
+body form{
+    margin-left: 40%;
 }

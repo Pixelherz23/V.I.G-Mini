@@ -6,9 +6,10 @@
     <meta name="application-name" content="News">
     <meta name="description" content="News">
     <meta name="author" content="Nils Jollet, Kai Stieler, Lukas Beckmann">
+    <meta name="Viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="../css/general.css">
-    <link rel="stylesheet" type="text/css" href="../css/News.css">
+    <link rel="stylesheet" type="text/css" href="css/general.css">
+    <link rel="stylesheet" type="text/css" href="css/News.css">
     <title>News</title>
 </head>
 
@@ -16,28 +17,31 @@
 <body>
     <header>
         <picture>
-            <source media="(min-width: 1920px)" srcset="../pics/1920x200.png">
-            <source media="(min-width: 1280px)" srcset="../pics/1280x133.png">
-            <img src="../pics/1280x133.png" alt="Kann nicht dargestellt werden">  
+            <source media="(min-width: 1920px)" srcset="pics/1920x200.png">
+            <source media="(min-width: 1280px)" srcset="pics/1280x133.png">
+            <img src="pics/1280x133.png" alt="Kann nicht dargestellt werden">  
         </picture>
 
         <nav>
-            <p>Wilkommen, ...!</p>
+            <p id="welcome"></p>
             <a id="Uebersicht" href="Uebersicht.html">Übersicht</a>
             <a id="news" href="News.html">News</a>
             <a id="hilfe" href="Hilfe.html">Hilfe</a>
             <a href="Acc-Einstellungen.html">Profil</a>
             <!--TODO: Abmelden Funktion-->
-            <a href="">Abmelden</a>
+            <a onclick="logOut()">Abmelden</a>
         </nav>  
+        <script src="js/LoginAndLogout.js"></script>
+        <script src="js/News.js"></script>
+        <script>autoRedirect();</script>
     </header>
-
-    <section>
-        <h1>Überschrift:</h1>
-        <article>
-            <p>Test</p>
-        </article>
-    </section>
+    <div id="newsarea">
+        
+    </div>
+    <script>
+        sendrequestNews(document.getElementById("newsarea"));
+        loadName(document.getElementById("welcome"));
+    </script>
 </body>
 
 <footer>

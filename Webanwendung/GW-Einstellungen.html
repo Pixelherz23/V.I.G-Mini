@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de">
+
+
+<head>
+    <meta name="application-name" content="GW-Einstellungen">
+    <meta name="description" content="GW-Einstellungen">
+    <meta name="author" content="Nils Jollet, Kai Stieler, Lukas Beckmann">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/general.css">
+    <link rel="stylesheet" type="text/css" href="css/GW-Einstellungen.css">
+    <title>GW-Einstellungen</title>
+</head>
+
+
+<body>
+    <header>
+        <picture>
+            <source media="(min-width: 1920px)" srcset="pics/1920x200.png">
+            <source media="(min-width: 1280px)" srcset="pics/1280x133.png">
+            <img src="pics/1280x133.png" alt="Kann nicht dargestellt werden">
+        </picture>
+
+        <nav>
+            <p id="welcome"></p>
+            <a id="Uebersicht" href="Uebersicht.html">Übersicht</a>
+            <a id="news" href="News.html">News</a>
+            <a id="hilfe" href="Hilfe.html">Hilfe</a>
+            <a href="Acc-Einstellungen.html">Profil</a>
+            <!--TODO: Abmelden Funktion-->
+            <a onclick="logOut()" href="">Abmelden</a>
+        </nav>  
+        <script src="js/GW-Einstellungen.js"></script>
+        <script src="js/LoginAndLogout.js"></script>
+        <script>autoRedirect();</script>
+    </header>
+
+    <h1 id="titleoptions">Einstellungen: </h1>
+    
+    <!--Werte/Uhrzeit Button!-->
+    <form class="gridwrapper" onsubmit="return false">
+
+        <!--Bodenfeuchtigkeitsform-->
+        <div id= "btitle">Bodenfeuchtigkeit:</div>
+        <div id= "bform">
+            
+        </div>
+        <div class="werteuhrzeitswitchclass" id="werteuhrzeitswitch">
+            <input type="checkbox" name="werteuhrzeitswitch" class="werteuhrzeitswitch-checkbox" id="mywerteuhrzeitswitch" tabindex="0" >
+            <label class="werteuhrzeitswitch-label" for="mywerteuhrzeitswitch">
+                <span class="werteuhrzeitswitch-inner"></span>
+                <span class="werteuhrzeitswitch-switch"></span>
+            </label>
+        </div>
+
+        <div class="onoffswitch" id="bswitch">
+            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitchboden" tabindex="0">
+            <label class="onoffswitch-label" for="myonoffswitchboden">
+                <span class="onoffswitch-inner"></span>
+                <span class="onoffswitch-switch"></span>
+            </label>
+        </div>
+    
+
+        <!--Temperaturform-->
+        <div id="ttitle">Temperatur:</div>          
+        <div id="tform">
+            <label for="temp">max:</label>
+            <input width="200" required class="boxdesign" type="text" id="temp" name="temp">
+            °C
+        </div>
+        <div class="onoffswitch" id="tswitch">
+            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitchtemp" tabindex="0">
+            <label class="onoffswitch-label" for="myonoffswitchtemp">
+                <span class="onoffswitch-inner"></span>
+                <span class="onoffswitch-switch"></span>
+            </label>
+        </div>
+        
+
+        <!--Lichtform-->
+        <div id="ltitle">Licht:</div>
+        <div id="lform">
+            <label for="from">von:</label>
+            <input required class="boxdesign" type="text" id="from" name="from">
+            <label for="to">bis:</label>
+            <input required class="boxdesign" type="text" id="to" name="to">
+        </div>
+        <div class="onoffswitch" id="lswitch">
+            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitchlight" tabindex="0" >
+            <label class="onoffswitch-label" for="myonoffswitchlight">
+                <span class="onoffswitch-inner"></span>
+                <span class="onoffswitch-switch"></span>
+            </label>
+        </div>
+
+        <button onclick="loginSaveOptions(werteswitch,tempswitch, bodenswitch, lichtswitch)" id="save" class="save">save</button>
+    </form>  
+    <script>
+        var tempswitch = document.getElementById("myonoffswitchtemp");
+
+        var lichtswitch = document.getElementById("myonoffswitchlight");
+
+        var werteswitch = document.getElementById("mywerteuhrzeitswitch");
+
+        var bodenswitch = document.getElementById("myonoffswitchboden");
+
+        loginTemp(tempswitch,document.getElementById("temp") );
+
+        loginLight(lichtswitch, document.getElementById("from") ,document.getElementById("to"));
+
+        loginMoist(document.getElementById("bform"), werteswitch);
+
+        setTimeout(nextStep, 500);
+
+        function nextStep(){
+            if(localStorage.getItem("moistvalue") == "true"){
+                console.log(document.getElementById("BFeuchtigkeit"));
+                loginMoistValueTrue(document.getElementById("BFeuchtigkeit"), bodenswitch);
+            }else if(localStorage.getItem("moistvalue")== "false") {
+                console.log("pls sei hier")
+                loginMoistValueFalse(document.getElementById("bfrom"), bodenswitch);
+                setTimeout(setLocal, 700);
+            }
+        }
+
+        function setLocal(){
+            localStorage.setItem("boden_from", document.getElementById("bfrom").value );
+        }
+
+        werteswitch.onclick = function(event){
+            var state = updateChecked(event,werteswitch);
+            if (state == false) {
+                replaceWithIntervall(document.getElementById("bform"));
+                loginMoistValueFalse(document.getElementById("bfrom"), bodenswitch);
+                setTimeout(setLocal, 700);
+               
+                
+            }else{
+                replaceWithValue(document.getElementById("bform"));
+
+                loginMoistValueTrue(document.getElementById("BFeuchtigkeit"), bodenswitch);
+            }
+        }
+        
+        tempswitch.onclick = function(event){
+            updateChecked(event,tempswitch);
+        }
+
+        lichtswitch.onclick = function(event){
+            updateChecked(event,lichtswitch);
+        }
+
+        bodenswitch.onclick = function(event){
+            updateChecked(event,bodenswitch);
+        }
+
+        function loginSaveOptions(werteswitch, tempswitch, bodenswitch, lichtswitch){
+            var pkey = localStorage.getItem("schluessel"); //TODO: local storage?
+            var url = 'https://vig-mini.ddns.net/greenhouse/settings/update';
+
+            if (werteswitch.getAttribute("checked")!= null) {
+                //nach Value Speichern
+                var max_temp = document.getElementById("temp").value;
+                var min_soil = document.getElementById("BFeuchtigkeit").value;
+                
+                var tempOn;
+                if (tempswitch.getAttribute("checked")!= null) {
+                    tempOn = 1;
+                }else{
+                    tempOn = 0;
+                }
+
+                var smOn;
+                if (bodenswitch.getAttribute("checked")!= null) {
+                    smOn = 1;
+                }else{
+                    smOn = 0;
+                }
+
+                var tabletype = "light"
+                var intervalnumber = 1;
+                var from = document.getElementById("from").value;
+                var to = document.getElementById("to").value;
+
+                var tableOn;
+                if (lichtswitch.getAttribute("checked")!= null) {
+                    tableOn = 1;
+                }else{
+                    tableOn = 0;
+                }
+
+                                
+                var body = {
+                    'product_key': pkey,
+                    'max_temp': max_temp,
+                    'min_soil_moisture': min_soil,
+                    'temp_on': tempOn,
+                    'soil_moisture_on': smOn,
+                    'timetable_type': tabletype,
+                    'interval': intervalnumber,
+                    'from_time': from,
+                    'to_time': to,
+                    'timetable_on': tableOn
+                }
+                var checked = false;
+                if(checkTemp(document.getElementById("temp")) && checkMoistValue(document.getElementById("BFeuchtigkeit")) 
+                    && checkTime(document.getElementById("from")) && checkTime(document.getElementById("to"))){
+                        sendrequestSaveOptions(body, url, 0);
+                        checked = true;
+                    }
+                else{
+                    
+                }
+
+                tabletype = "soilMoisture";
+                intervalnumber = localStorage.getItem("intervalnumber");
+                from = localStorage.getItem("boden_from");
+                tableOn = 0;
+                body = {
+                    'product_key': pkey,
+                    'max_temp': max_temp,
+                    'min_soil_moisture': min_soil,
+                    'temp_on': tempOn,
+                    'soil_moisture_on': smOn,
+                    'timetable_type': tabletype,
+                    'interval': intervalnumber,
+                    'from_time': from,
+                    'timetable_on': tableOn
+                }
+                if(checked == true){
+                    sendrequestSaveOptions(body,url, 1);
+                }
+                    
+            }else{
+                //2 Anfragen: einmal mit Zeitintervall und einmal mit Bodenintervall
+                var max_temp = document.getElementById("temp").value;
+               
+
+                var tempOn;
+                if (tempswitch.getAttribute("checked")!= null) {
+                    tempOn = 1;
+                }else{
+                    tempOn = 0;
+                }
+
+                var smOn;
+                if (bodenswitch.getAttribute("checked")!= null) {
+                    smOn = 1;
+                }else{
+                    smOn = 0;
+                }
+
+                var tabletype = "soilMoisture";
+                var intervalnumber = 1;
+                var from = document.getElementById("bfrom").value;
+                var tableOn = 1;
+
+                var body = {
+                    'product_key': pkey,
+                    'max_temp': max_temp,
+                    'temp_on': tempOn,
+                    'soil_moisture_on': smOn,
+                    'timetable_type': tabletype,
+                    'interval': intervalnumber,
+                    'from_time': from,
+                    'timetable_on': tableOn
+                }
+
+                if(checkTemp(document.getElementById("temp")) && checkTime(document.getElementById("bfrom"))
+                    && checkTime(document.getElementById("from")) && checkTime(document.getElementById("to")) ){
+                    sendrequestSaveOptions(body,url, 0);
+                }
+                else{
+
+                }
+
+                tabletype = "light";
+                intervalnumber = 1;
+                from = document.getElementById("from").value;
+                to = document.getElementById("to").value;
+                if (lichtswitch.getAttribute("checked")!= null) {
+                    tableOn = 1;
+                }else{
+                    tableOn = 0;
+                }
+
+
+                var body = {
+                    'product_key': pkey,
+                    'max_temp': max_temp,
+                    'temp_on': tempOn,
+                    'soil_moisture_on': smOn,
+                    'timetable_type': tabletype,
+                    'interval': intervalnumber,
+                    'from_time': from,
+                    'to_time': to,
+                    'timetable_on': tableOn
+                }
+
+                sendrequestSaveOptions(body,url, 1);
+                
+            }
+
+        }
+
+        function sendrequestSaveOptions(body, url, flag){
+        
+            console.log("starting request Temp");
+            var formBody = [];
+            for (var property in body) {
+                var encodedKey = encodeURIComponent(property);
+                var encodedValue = encodeURIComponent(body[property]);
+                formBody.push(encodedKey + "=" + encodedValue);
+            }
+            
+            formBody = formBody.join("&");
+            console.log("body joined, body:", formBody);
+            
+
+            fetch(url, {
+                method: 'POST',
+                mode: "cors",
+                headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formBody
+            })
+            .then(response => {
+                if(response.status == 200){
+                    if (flag == 1) {
+                        window.location = "./GW-Einstellungen.html"
+                    }
+                    
+                }else{
+                    alert("Fehler");
+                }
+            })
+        }
+     
+
+
+        loadName(document.getElementById("welcome"));
+
+        loadGWName(document.getElementById("titleoptions"));
+    </script> 
+</body>
+
+<footer>
+    <a href="footer/Impressum.html">Impressum</a>
+    <a href="footer/Datenschutz.html">Datenschutzerklärung</a>
+    <a href="footer/Kontakt.html">Kontaktinformationen</a>
+    &copy; Copyright 2021 VIGMini
+</footer>
