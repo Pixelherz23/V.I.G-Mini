@@ -1,4 +1,8 @@
-
+/*
+   TODO
+   for buisness logic, default  setting for XYcontrol to false
+   CHECK OB ES IN ORDNUNG IST INVERVALL 1 ZU NEHMEN
+*/
 //To disable pragma messages on compile
 //include this Before including FastLED.h
 #define FASTLED_INTERNAL
@@ -7,13 +11,16 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
-#include <time.h>
 
+
+
+#define OFF LOW
+#define ON HIGH
 
 DHTesp dht;
 const int DHT11_PIN =  21;
 const int MOIS_SENSOR_PIN = 32;
-const int FAN_PIN = 17;
+const int FAN_PIN = 23;
 const int WATER_PUMP_PIN = 18;
 const int LED_PIN = 33;
 const int NUMBER_OF_LEDS = 20;
@@ -29,8 +36,11 @@ unsigned long pastTimeGet = 0;
 unsigned long intervalOfGetTime = 10000;//10sekunden
 unsigned long pastTimeOfTime =  0;
 
+unsigned long intervalOfPump = 1800000  ;//30min
+unsigned long pastTimeOfPump = 0;
+
 String GEWAECHSHAUS_ID = "GTD2-ERH6-E665";
-const char * SSID_D = "Vodafone-523C";
+const char * SSID_D = "Vodafone-DAE5";
 const char * PASSWORD =  "XXX";
 const String SERVER_URL = "https://vig-mini.ddns.net";
 
@@ -97,11 +107,16 @@ void setup() {
   FastLED.addLeds<WS2812, LED_PIN, GRB>(leds, NUMBER_OF_LEDS);
   dht.setup(DHT11_PIN, DHTesp::DHT11);
   pinMode(FAN_PIN, OUTPUT);
+  delay(1000);
   pinMode(MOIS_SENSOR_PIN, OUTPUT);
+  delay(1000);
   pinMode(WATER_PUMP_PIN, OUTPUT);
-  turnLightsOff();
-  deactivateFan();
-  digitalWrite(WATER_PUMP_PIN, LOW);
+  /*
+    delay(1000);
+    digitalWrite(FAN_PIN,OFF);
+    delay(1000);
+    digitalWrite(WATER_PUMP_PIN, OFF);
+  */
 
 }
 
@@ -112,6 +127,7 @@ void loop() {
   temp = (int)getTemp();
   mois = (int)getMoisture();
   hum = (int)getHum();
+
   if (WiFi.status() == WL_CONNECTED) {
     requestTimeStamp();
     unsigned long currentMillis = millis();
@@ -135,14 +151,23 @@ void loop() {
 
   printVars();
   tempControl();
+  //turnLightsOn("blue");
   controlLights(fromTime, toTime);
 
   if (istWateringControlOn == true) {
     if (isWaterTimeTableOn == false) {
       alreadyWatered = false; //need to be tested
-      wateringControlByValue();
+
+      unsigned long currentMillis3 = millis();
+      if ((currentMillis3 - pastTimeOfPump ) > intervalOfPump)// Check if value of soil changed every 10min
+      {
+        pastTimeOfPump = currentMillis3;
+        wateringControlByValue();
+      }
     } else if (isWaterTimeTableOn == true) {
+
       wateringControlByTime(waterringTimestamp);
+
     }
   }
 
@@ -152,31 +177,12 @@ void loop() {
   //==Test-Logic==
   //testComponents();
   //activateFan();
-  //delay(3000);
+
   //Serial.println("Fan ist aus");
   //deactivateFan();
   //delay(3000);
   //sendData();
   //delay(100);
-  Serial.println("Begin");
-  timestamp = "13:00:00" ;//pumpe an
-  wateringControlByTime("12:00:00");
-  alreadyWatered = false;
-  delay(5000);
-  timestamp = "12:00:00";//pumpe aus
-  wateringControlByTime("13:00:00");
-  delay(5000);
-  timestamp = "15:00:00"; //pumpe an
-  wateringControlByTime("12:00:00");
-  delay(5000);
-  timestamp = "23:57:00"; //pumpe aus reset var
-  wateringControlByTime("15:00:00");
-  delay(5000);
-
-  timestamp = "15:00:00";//pumpe an
-  wateringControlByTime("13:00:00");
-  delay(5000);
-
 
   //==TEst-Logic-End==
 
@@ -220,7 +226,7 @@ void requestSettings() {
   String pathTemp = SERVER_URL + "/greenhouse/settings/temperature?product_key=" + GEWAECHSHAUS_ID;
   String pathMoisVal = SERVER_URL + "/greenhouse/settings/soil-moisture/value?product_key=" + GEWAECHSHAUS_ID + "&interval=1";
   String pathSoilMoisTime = SERVER_URL + "/greenhouse/settings/soil-moisture/time?product_key=" + GEWAECHSHAUS_ID;
-  String pathLight = SERVER_URL + "/greenhouse/settings/light?product_key=" + GEWAECHSHAUS_ID;
+  String pathLight = SERVER_URL + "/greenhouse/settings/light?product_key=" + GEWAECHSHAUS_ID + "&interval=1";
   DynamicJsonDocument doc(2048);
   //connect to server
   http.begin(pathTemp);
@@ -308,12 +314,16 @@ void requestSettings() {
       Serial.print(("deserializeJson() failed: "));
       Serial.println(err.c_str());
     }
-    //serializeJsonPretty(doc, Serial);
+    serializeJsonPretty(doc, Serial);
 
-    fromTime = doc["FROM_TIME"].as<String>();
-    toTime = doc["TO_TIME"].as<String>();
 
-    if (doc["TIMETABLE_ON"].as<int>() == 1) {
+    JsonArray arr = doc.as<JsonArray>();
+    fromTime = arr[0]["FROM_TIME"].as<String>();
+    toTime = arr[0]["TO_TIME"].as<String>();
+    //fromTime = doc["FROM_TIME"].as<String>();
+    //toTime = doc["TO_TIME"].as<String>();
+
+    if (arr[0]["TIMETABLE_ON"].as<int>() == 1) {
       isLightTimeTableOn = true;
 
     } else {
@@ -378,7 +388,7 @@ void connectToWifi() {
   WiFi.begin(SSID_D, PASSWORD);
   unsigned long timer = millis();
   //try to connect to wifi till connection established or the the timeout hits
-  while (WiFi.status() != WL_CONNECTED && ((millis() - timer) < 5000)) {
+  while (WiFi.status() != WL_CONNECTED && ((millis() - timer) < 10000)) {
     delay(1000);
     Serial.println("Connecting to WiFi...");
 
@@ -414,12 +424,12 @@ float getHum() {
 
 void activateFan() {
   Serial.println("Fan ist an");
-  digitalWrite(FAN_PIN, HIGH);
+  digitalWrite(FAN_PIN, ON);
 
 }
 void deactivateFan() {
   Serial.println("Fan ist aus");
-  digitalWrite(FAN_PIN, LOW);
+  digitalWrite(FAN_PIN, OFF);
 
 }
 
@@ -507,10 +517,10 @@ void controlLights(String from, String till) {
 }
 void watering() {
   Serial.println("Pumpe ist an");
-  digitalWrite(WATER_PUMP_PIN, HIGH);
+  digitalWrite(WATER_PUMP_PIN, ON);
   delay(5000);
   Serial.println("Pumpe ist aus");
-  digitalWrite(WATER_PUMP_PIN, LOW);
+  digitalWrite(WATER_PUMP_PIN, OFF);
 
 }
 //tested
@@ -612,15 +622,15 @@ void testComponents() {
   delay(5000);
   turnLightsOff();
   watering();
-
-  Serial.println("Auzeichnung: ");
-  Serial.print("Temp: ");
-  Serial.println(getTemp());
-  Serial.print("mois: ");
-  Serial.println(getMoisture());
-  Serial.print("hum: ");
-  Serial.println(getHum());
-  Serial.println("===============\n");
-
+  /*
+    Serial.println("Auzeichnung: ");
+    Serial.print("Temp: ");
+    Serial.println(getTemp());
+    Serial.print("mois: ");
+    Serial.println(getMoisture());
+    Serial.print("hum: ");
+    Serial.println(getHum());
+    Serial.println("===============\n");
+  */
 
 }
