@@ -40,9 +40,13 @@ function createChartTemp(data,chart,flag,anzeigeText){
         if(counter % stepSize == 0){ 
             let timeStamp = measurementArr[counter];
             let time = timeStamp.split(' ');
-            timeArr.push(time[4]);
+            let secondsplit = time[4].split(":");
+            timeArr.push(time[1]+ " " +time[2]+ " "+secondsplit[0]+ ":" + secondsplit[1]);
         }else{
-            timeArr.push("");
+            let timeStamp = measurementArr[counter];
+            let time = timeStamp.split(' ');
+            let secondsplit = time[4].split(":");
+            timeArr.push(time[1]+ " " +time[2]+ " "+secondsplit[0]+ ":" + secondsplit[1]);
         }
         counter++;
     }
@@ -60,12 +64,20 @@ function createChartTemp(data,chart,flag,anzeigeText){
             }]
         },
         options: {
+            showXLabels: 5,
             responsive: false,
             
             scales: {
                 y: {
                     beginAtZero: false
+                },
+                x: {
+                    ticks: {
+                        maxTicksLimit: 10,
+                        showXLabels: 5,
+                        }
                 }
+                
                 
             }
         }

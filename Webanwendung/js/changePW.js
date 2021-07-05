@@ -25,7 +25,7 @@ function loginPWChange(pw1, pw2){
         
     
 
-    if(checkpw(pw1)){
+    if(checkpw(pw2)){
         sendrequestNewPW(body, url);
         console.log("erfolg");
     }else{
@@ -45,6 +45,7 @@ function loginPWChange(pw1, pw2){
 function checkpw(pw){
     var allowedChars = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
     if(pw.value.match(allowedChars)){
+        pw.setCustomValidity("")
         return true;
     }else{
         pw.setCustomValidity("Passwort muss min. 8 Zeichen lang sein und min. 1 Großbuchstaben, min. 1 Kleinbuchstaben und min 1 Sonderzeichen(#?!@$%^&*-)");

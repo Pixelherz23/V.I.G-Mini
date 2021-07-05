@@ -475,6 +475,7 @@ function checkMoistValue(moistdom){
     var regex = /^(?!0+(?:\.0+)?$)\d?\d(?:\.\d\d?)?$|^0$|^100$/
     console.log(moistdom.value)
     if(moistdom.value.match(regex)){
+        moistdom.setCustomValidity("");
         return true;
     }else{
         moistdom.setCustomValidity("Bitte Werte zwischen 0(.01) und 100 %")
@@ -491,6 +492,7 @@ function checkMoistValue(moistdom){
 function checkTemp(tempdom){
     var regex = /^[2-3]\d|^40$/
     if(tempdom.value.match(regex)){
+        tempdom.setCustomValidity("")
         return true;
     }else{
         tempdom.setCustomValidity("Bitte Werte zwischen 20 und 40 °C")
@@ -506,6 +508,7 @@ function checkTemp(tempdom){
 function checkTime(timedom){
     var regex = /^(((([0-1]?[0-9])|(2[0-3])):?[0-5][0-9]:?[0-5][0-9]+$))/
     if(timedom.value.match(regex)){
+        timedom.setCustomValidity("")
         return true;
     }else{
         timedom.setCustomValidity("Bitte im Format (H)H:MM:SS (0:00:00 - 23:59:59)")

@@ -266,10 +266,11 @@
                     'from_time': from,
                     'timetable_on': tableOn
                 }
-
+                var flag = 0;
                 if(checkTemp(document.getElementById("temp")) && checkTime(document.getElementById("bfrom"))
                     && checkTime(document.getElementById("from")) && checkTime(document.getElementById("to")) ){
                     sendrequestSaveOptions(body,url, 0);
+                    flag = 1;
                 }
                 else{
 
@@ -297,8 +298,10 @@
                     'to_time': to,
                     'timetable_on': tableOn
                 }
-
-                sendrequestSaveOptions(body,url, 1);
+                if(flag == 1){
+                    sendrequestSaveOptions(body,url, 1);
+                }
+                
                 
             }
 

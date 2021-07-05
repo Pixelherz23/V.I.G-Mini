@@ -58,6 +58,7 @@ function weiterleiten( fn, ln, mail ,pw1, pw2 ){
 function checkfirstname(firstname){
     var allowedChars = /[a-z]+[a-z]*([-][a-z]+[a-z])?/          
     if(firstname.value.length >= 3 && firstname.value.match(allowedChars)){
+        firstname.setCustomValidity("")
         return true;
     }else{
         firstname.setCustomValidity("Vorname muss min. 3 Buchstaben enthalten! (keine Sonderzeichen/Zahlen)")
@@ -74,9 +75,10 @@ function checkfirstname(firstname){
 function checklastname(lastname){
     var allowedChars = /[a-z]+[a-z]*([-][a-z]+[a-z])?/
     if(lastname.value.length >= 3 && lastname.value.match(allowedChars)){
+        lastname.setCustomValidity("");
         return true;
     }else{
-        lastname.setCustomValidity("Vorname muss min. 3 Buchstaben enthalten! (keine Sonderzeichen/Zahlen)");
+        lastname.setCustomValidity("Nachname muss min. 3 Buchstaben enthalten! (keine Sonderzeichen/Zahlen)");
         return false;
     }
 }
@@ -88,9 +90,14 @@ function checklastname(lastname){
  * @returns returns true if the e-mail adress input is not empty
  */
 function checkemail(email){
-    if(email.value == ''){
+    var regex = /^[a-zA-Z0-9.!#$%&’*+\=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+    if(email.value.match(regex)){
+        email.setCustomValidity("");
+        return true;
+    }else{
+        email.setCustomValidity("Bitte E-Mail Adresse eingeben!");
         return false;
-    }else{return true;}
+    }
 }
 
 /**
@@ -103,6 +110,7 @@ function checkemail(email){
 function checkpw(pw){
     var allowedChars = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
     if(pw.value.match(allowedChars)){
+        pw.setCustomValidity("");
         return true;
     }else{
         pw.setCustomValidity("Passwort muss min. 8 Zeichen lang sein und min. 1 Großbuchstaben, min. 1 Kleinbuchstaben und min 1 Sonderzeichen(#?!@$%^&*-)");

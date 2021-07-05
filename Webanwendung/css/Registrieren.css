@@ -1,6 +1,5 @@
 
 .gridwrapper{
-    justify-self: center;
     display: grid;
     grid-gap: 15px;
     grid-template-columns: repeat(2,minmax(150px,600px));
@@ -73,8 +72,4 @@
     color: white;
     margin-left: 10px;
     align-self: center;
-}
-
-body form{
-    margin-left: 40%;
 }
