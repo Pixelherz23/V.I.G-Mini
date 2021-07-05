@@ -27,7 +27,7 @@ const int NUMBER_OF_LEDS = 20;
 
 
 
-unsigned long intervalOfSendData = 600000;//10MIn
+unsigned long intervalOfSendData = 60000;//1MIn 10 =600000
 unsigned long pastTimeSend = 0;
 
 unsigned long intervalOfGetData = 10000;//30sekunden
@@ -108,8 +108,8 @@ void setup() {
   dht.setup(DHT11_PIN, DHTesp::DHT11);
   pinMode(FAN_PIN, OUTPUT);
   delay(1000);
-  pinMode(MOIS_SENSOR_PIN, OUTPUT);
-  delay(1000);
+  //pinMode(MOIS_SENSOR_PIN, OUTPUT);
+  //delay(1000);
   pinMode(WATER_PUMP_PIN, OUTPUT);
   /*
     delay(1000);
@@ -404,7 +404,7 @@ void connectToWifi() {
 int getMoisture() {
   int anRead = analogRead(MOIS_SENSOR_PIN);
   delay(1000);
-  int erg = map(anRead, 4095, 0, 0, 100); //4095=>0% trocken, 0=> 100% nass
+  int erg = map(anRead, 4095, 231, 0, 100); //4095=>0% trocken, 231=> 100% nass
   return erg;
 }
 
