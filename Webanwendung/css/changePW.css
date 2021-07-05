@@ -1,0 +1,22 @@
+body form {
+    position: relative;
+    display: block;
+    left: 35%;
+    margin-top: 30px;
+    border: 1px solid black;
+    text-align: center;
+    justify-content: center;
+    height: 250px;
+    width: 350px;
+}
+
+body form h1{
+    text-decoration: underline;
+}
+
+#pwbutton{
+    font-size: large;
+    margin-top: 30px;
+    color: white;
+    background-color: blue;
+}

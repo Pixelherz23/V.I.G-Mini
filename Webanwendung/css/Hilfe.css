@@ -6,3 +6,20 @@
 body section{
     margin: 30px 25px;
 }
+
+footer{
+    margin-top: 10px;
+    margin-bottom: -150px;
+    width: 100.8%;
+}
+
+.headline{
+    font-size: xx-large;
+    text-decoration: underline;
+
+}
+
+.content{
+    margin-left: 50px;
+    margin-bottom: 30px;
+}

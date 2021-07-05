@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+
+
+<head>
+    <meta name="application-name" content="passwort ändern">
+    <meta name="description" content="passwort ändern">
+    <meta name="author" content="Nils Jollet, Kai Stieler, Lukas Beckmann">
+    <meta name="Viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/general.css">
+    <link rel="stylesheet" type="text/css" href="css/changePW.css">
+    <title>Passwort ändern</title>
+</head>
+
+
+<body>
+    
+    <header>
+        <picture>
+            <source media="(min-width: 1920px)" srcset="pics/1920x200.png">
+            <source media="(min-width: 1280px)" srcset="pics/1280x133.png">
+            <img src="pics/1280x133.png" alt="Kann nicht dargestellt werden">        
+        </picture>
+
+        <nav>
+            <p id="welcome"></p>
+            <a href="Uebersicht.html">Übersicht</a>
+            <a href="News.html">News</a>
+            <a href="Hilfe.html">Hilfe</a>
+            <a id="profil" href="Acc-Einstellungen.html">Profil</a>
+            <!--TODO: Abmelden Funktion-->
+            <a onclick="logOut()" >Abmelden</a>
+        </nav> 
+        <script src="js/LoginAndLogout.js"></script>
+        <script src="js/changePW.js"></script>
+        <script>autoRedirect();</script>
+    </header>
+
+    <form onsubmit="return false">
+        <h1>Passwort ändern:</h1>
+        <label for="pw1">Altes Passwort:</label><br>
+        <input class="boxdesign" required id="pw1" type="password" name="pw1"><br>
+        <label for="pw2">Neues Passwort:</label><br>
+        <input class="boxdesign" required id="pw2" type="password" name="pw2"><br>
+
+        <button onclick="loginPWChange(document.getElementById('pw1'),document.getElementById('pw2'))" id="pwbutton">Passwort ändern!</button>
+    </form>
+
+    <script>
+        loginUserData();
+        loadName(document.getElementById("welcome"));
+    </script>
+ 
+</body>
+
+<footer>
+    <a href="footer/Impressum.html">Impressum</a>
+    <a href="footer/Datenschutz.html">Datenschutzerklärung</a>
+    <a href="footer/Kontakt.html">Kontaktinformationen</a>
+    &copy; Copyright 2021 VIGMini
+</footer>

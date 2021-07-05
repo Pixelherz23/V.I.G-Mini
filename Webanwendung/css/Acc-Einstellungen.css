@@ -1,0 +1,74 @@
+#profil{
+    background-color: blue;
+    color: white;
+}
+
+body h1{
+    margin-left: 30px;
+    text-decoration: underline;
+}
+
+.gridwrapper{
+  
+    display: grid;
+    margin-left: 20%;
+    column-gap: 180px;
+    grid-template-columns: repeat(2,minmax(150px,300px));
+    grid-template-rows: repeat(3,100px);
+
+}
+
+#fn{
+
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    justify-self: center;
+    align-content: center;
+
+}
+
+#ln{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    justify-self: center;
+    align-content: center;
+}
+
+#mail{
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 3;
+    grid-row-end: 4;
+    justify-self: center;
+    align-content: center;
+}
+
+#savebutton{
+
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 3;
+    grid-row-end: 4;
+    justify-self: left;
+    align-content: left;
+
+    width: 60px;
+    height: 30px;
+    font-size: large;
+    background-color: blue;
+    color: white;
+}
+
+#pwchange{
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+  
+    font-size: large;
+
+}

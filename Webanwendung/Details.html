@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+
+
+<head>
+    <meta name="application-name" content="GW-Details">
+    <meta name="description" content="GW-Details">
+    <meta name="author" content="Nils Jollet, Kai Stieler, Lukas Beckmann">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/general.css">
+    <link rel="stylesheet" type="text/css" href="css/Details.css">
+    <title>GW-Details</title>
+</head>
+
+
+<body>
+    <header>
+        <picture>
+            <source media="(min-width: 1920px)" srcset="pics/1920x200.png">
+            <source media="(min-width: 1280px)" srcset="pics/1280x133.png">
+            <img src="pics/1280x133.png" alt="Kann nicht dargestellt werden">
+        </picture>
+
+        <nav>
+            <p id="welcome"></p>
+            <a id="Uebersicht" href="Uebersicht.html">Übersicht</a>
+            <a id="news" href="News.html">News</a>
+            <a id="hilfe" href="Hilfe.html">Hilfe</a>
+            <a href="Acc-Einstellungen.html">Profil</a>
+            <!--TODO: Abmelden Funktion-->
+            <a onclick="logOut()" href="">Abmelden</a>
+            <script src="js/LoginAndLogout.js"></script>
+            <script>autoRedirect();</script>
+        </nav>  
+        <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.4.0/chart.min.js" integrity="sha512-JxJpoAvmomz0MbIgw9mx+zZJLEvC6hIgQ6NcpFhVmbK1Uh5WynnRTTSGv3BTZMNBpPbocmdSJfldgV5lVnPtIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>-->
+    </header>
+    <script src="js/Details.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.4.0/chart.min.js" crossorigin="anonymous"></script>
+    <h1 id="titledetails">Details: </h1>
+    <div class="gridwrapper">
+        <canvas class="canvas" id="TempChart" width="800" height="200"></canvas>
+        <canvas class="canvas" id="MoistChart" width="800" height="200"></canvas>
+        <canvas class="canvas" id="HumidChart" width="800" height="200"></canvas>
+        <div id="dropdownTitel">Anzeige:</div><br>
+        <select id="dropdown" onchange="login(document.getElementById('TempChart'),document.getElementById('HumidChart'),document.getElementById('MoistChart'),this.value)">
+            <option value="(24 Stunden)">24h</option>
+            <option value="(1 Woche)">7 Tage</option>
+            <option value="(1 Monat)">30 Tage</option>
+        </select>
+    </div>
+    <script>
+
+        login(document.getElementById("TempChart"),document.getElementById("HumidChart"),document.getElementById("MoistChart"),"(24 Stunden)");
+        loadName(document.getElementById("welcome"));
+        loadGWName(document.getElementById("titledetails"));
+        console.log(localStorage.getItem("schluessel"));
+    </script>
+    
+</body>
+
+<footer>
+    <a href="footer/Impressum.html">Impressum</a>
+    <a href="footer/Datenschutz.html">Datenschutzerklärung</a>
+    <a href="footer/Kontakt.html">Kontaktinformationen</a>
+    &copy; Copyright 2021 VIGMini
+</footer>

@@ -3,10 +3,13 @@ body section{
     height: 350px;
     width: 300px;
     border: 1px solid black;
-    margin: 10px;
+    margin: auto;
+    margin-top: 50px;
+    justify-self: center;
+    margin-bottom: 15px;
     text-align: center;
-    position: absolute;
-    left: 40%;
+    position: relative;
+   
 }
 
 body section p{
@@ -21,7 +24,7 @@ body section form input{
     margin-bottom: 10px;
 }
 
-body form button{ /* Registrieren Button zentrien + text über eingabefeld bekommen*/
+body form button{ 
     background-color: rgb(7, 105, 252);
     border-radius: 10px;
     height: auto;
@@ -63,4 +66,6 @@ body form label{
     margin-bottom: 8px;
 }
 
-
+#passwortlabel{
+    text-align: center;
+}
