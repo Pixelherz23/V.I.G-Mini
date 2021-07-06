@@ -19,13 +19,11 @@ import ddns.net.vigmini.data.access.TIMETABLE_SOIL_MOISTURE
 import ddns.net.vigmini.data.model.GreenhouseSettings
 import ddns.net.vigmini.data.model.GreenhouseSettingsSubList
 import ddns.net.vigmini.data.model.GreenhouseSettingsSubListItem
-import ddns.net.vigmini.main.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.awaitResponse
-import java.lang.Exception
 
 class GreenhouseSettingsAdapter (private val settings: GreenhouseSettings,
                                  private val productKey: String,
@@ -156,7 +154,7 @@ class GreenhouseSettingsAdapter (private val settings: GreenhouseSettings,
                 viewHolder.tempButton.setOnClickListener {
                     val temp: String = viewHolder.tempValue.text.toString()
                     val tempOn: Boolean = viewHolder.tempSwitch.isChecked
-                    updateGreenhouseSettings(temp.substring(0, 1).toDouble(), 0.0, tempOn, false, "", "", false)
+                    updateGreenhouseSettings(temp.substring(0, 2).toInt(), 0, if(tempOn) 1 else 0, 0, "", "", 0)
                 }
             }
             1 -> {
@@ -168,7 +166,7 @@ class GreenhouseSettingsAdapter (private val settings: GreenhouseSettings,
                 viewHolder.soilMoistureSaveButton.setOnClickListener {
                     val soil: String = viewHolder.soilMoistureValue.text.toString()
                     val soilOn: Boolean = viewHolder.soilMoistureVSwitch.isChecked
-                    updateGreenhouseSettings( 0.0, soil.substring(0, 1).toDouble(), false, soilOn, "", "", false)
+                    updateGreenhouseSettings( 0, soil.substring(0, 2).toInt(), 0, if(soilOn) 1 else 0, "", "", 0)
                 }
             }
             2 -> {
@@ -191,16 +189,16 @@ class GreenhouseSettingsAdapter (private val settings: GreenhouseSettings,
         return settings.size
     }
 
-    private fun updateGreenhouseSettings(maxTemp: Double, minSoilMoisture: Double,
-                                            tempOn: Boolean, soilMoistureOn: Boolean,
-                                            fromTime: String, toTime: String, timeTableOn: Boolean){
+    private fun updateGreenhouseSettings(maxTemp: Int, minSoilMoisture: Int,
+                                            tempOn: Int, soilMoistureOn: Int,
+                                            fromTime: String, toTime: String, timeTableOn: Int){
         val api = ApiService.buildService()
 
         GlobalScope.launch(Dispatchers.IO) {
             try{
-                val response = if(maxTemp != 0.0){
+                val response = if(maxTemp != 0){
                     api.updateSettingsTemp(productKey, maxTemp, tempOn).awaitResponse()
-                }else if(minSoilMoisture != 0.0){
+                }else if(minSoilMoisture != 0){
                     api.updateSettingsSoilMoisture(productKey, minSoilMoisture, soilMoistureOn).awaitResponse()
                 }else if(fromTime != "" && toTime != ""){
                     api.updateSettingsLight(productKey, fromTime, toTime, timeTableOn, TIMETABLE_LIGHT, 1).awaitResponse()

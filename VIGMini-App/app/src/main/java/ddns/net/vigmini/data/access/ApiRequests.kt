@@ -24,24 +24,24 @@ interface ApiRequests {
 
     @FormUrlEncoded
     @POST("/greenhouse/settings/update")
-    fun updateSettingsTemp(@Field("product_key") productKey: String , @Field("max_temp") maxTemp: Double,
-                           @Field("temp_on") tempOn: Boolean): Call<Void>
+    fun updateSettingsTemp(@Field("product_key") productKey: String , @Field("max_temp") maxTemp: Int,
+                           @Field("temp_on") tempOn: Int): Call<Void>
 
     @FormUrlEncoded
     @POST("/greenhouse/settings/update")
-    fun updateSettingsSoilMoisture(@Field("product_key") productKey: String , @Field("min_soil_moiture") minSoilMoisture: Double,
-                                   @Field("soil_moisture_on") soilMoistureOn: Boolean): Call<Void>
+    fun updateSettingsSoilMoisture(@Field("product_key") productKey: String , @Field("min_soil_moisture") minSoilMoisture: Int,
+                                   @Field("soil_moisture_on") soilMoistureOn: Int): Call<Void>
 
     @FormUrlEncoded
     @POST("/greenhouse/settings/update")
     fun updateSettingsSoilMoistureTime(@Field("product_key") productKey: String , @Field("from_tome") fromTime: String,
-                                       @Field("timetable_on") timetableOn: Boolean, @Field("timetable_type") timetableType: String,
+                                       @Field("timetable_on") timetableOn: Int, @Field("timetable_type") timetableType: String,
                                        @Field("interval") interval: Int): Call<Void>
 
     @FormUrlEncoded
     @POST("/greenhouse/settings/update")
     fun updateSettingsLight(@Field("product_key") productKey: String , @Field("from_tome") fromTime: String,
-                                       @Field("to_tome") toTime: String, @Field("timetable_on") timetableOn: Boolean,
+                                       @Field("to_tome") toTime: String, @Field("timetable_on") timetableOn: Int,
                                        @Field("timetable_type") timetableType: String,
                                        @Field("interval") interval: Int): Call<Void>
 
