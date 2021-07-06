@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.VIGMini" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.VIGMini" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/appBackground</item>
         <item name="colorPrimaryVariant">@color/cardBackground</item>
@@ -11,6 +11,13 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.VIGMini.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 </resources>

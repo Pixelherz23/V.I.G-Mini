@@ -1,58 +1,59 @@
 package ddns.net.vigmini.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ddns.net.vigmini.R
-import ddns.net.vigmini.adapter.GreenhouseAdapter
 import ddns.net.vigmini.adapter.InformationAdapter
 import ddns.net.vigmini.data.access.ApiService
 import kotlinx.coroutines.*
 import retrofit2.awaitResponse
 import java.lang.Exception
-import java.lang.ref.PhantomReference
 
-open class MainActivity : AppCompatActivity() {
+open class InformationFragment : Fragment(){
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        getGreenhouseData(this)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.activity_main, container, false)
     }
 
     @DelicateCoroutinesApi
-    private fun getGreenhouseData(reference: MainActivity){
+    protected fun getInformationData(view: View, type: String){
+
         val api = ApiService.buildService()
 
         GlobalScope.launch(Dispatchers.IO) {
             try{
-                // email ist hard coded
-                val response = api.getGreenhouses("abcdef123@gmx.de").awaitResponse()
+                val response = api.getInformation(type).awaitResponse()
                 if (response.isSuccessful){
                     val data = response.body()!!
 
                     withContext(Dispatchers.Main){
                         // Lookup the recyclerview in activity layout
-                        val mainRecyclerView = findViewById<View>(R.id.main_recyclerView) as RecyclerView
+                        val newsRecyclerView = view.findViewById<View>(R.id.recyclerView) as RecyclerView
                         // Create adapter passing in the help data
-                        val adapter = GreenhouseAdapter(data)
+                        val adapter = InformationAdapter(data)
                         // Attach the adapter to the recyclerview to populate items
-                        mainRecyclerView.adapter = adapter
+                        newsRecyclerView.adapter = adapter
                         // Set layout manager to position the items
-                        mainRecyclerView.layoutManager = LinearLayoutManager(reference)
+                        newsRecyclerView.layoutManager = LinearLayoutManager(activity)
                     }
                 }
             }catch (e: Exception){
                 withContext(Dispatchers.Main){
-                    Toast.makeText(applicationContext, "Seems like something went wrong",  Toast.LENGTH_SHORT).show()
+
                 }
             }
 
 
         }
+
     }
 }

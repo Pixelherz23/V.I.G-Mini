@@ -55,4 +55,6 @@ dependencies {
 
     //AnyChart
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
+    implementation 'com.github.PhilJay:MPAndroidChart:v2.2.4'
+    implementation 'com.github.lecho:hellocharts-library:1.5.8@aar'
 }

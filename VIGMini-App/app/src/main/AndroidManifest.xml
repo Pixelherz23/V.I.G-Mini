@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="ddns.net.vigmini">
-    
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-sdk tools:overrideLibrary="com.cuberto.liquid_swipe"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-sdk tools:overrideLibrary="com.cuberto.liquid_swipe" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -12,13 +12,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.VIGMini">
-        <activity android:name=".activities.GreenhouseDetailActivity">
+        <activity
+            android:name=".activities.MenuActivity"
+            android:theme="@style/Theme.VIGMini.NoActionBar"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.LoginActivity"
+            android:theme="@style/Theme.VIGMini.NoActionBar"/>
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:theme="@style/Theme.VIGMini.NoActionBar"/>
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:theme="@style/Theme.VIGMini.NoActionBar"/>
+        <activity
+            android:name=".activities.GreenhouseDetailActivity"/>
+        <activity
+            android:name=".activities.GreenhouseSettingsActivity"/>
     </application>
-
 </manifest>

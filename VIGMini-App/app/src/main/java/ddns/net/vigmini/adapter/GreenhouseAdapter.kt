@@ -1,6 +1,7 @@
 package ddns.net.vigmini.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import retrofit2.awaitResponse
 
 class GreenhouseAdapter (private val greenhouses: Greenhouse) : RecyclerView.Adapter<GreenhouseAdapter.ViewHolder>(){
 
-
+    var onItemClick: ((GreenhouseItem) -> Unit)? = null
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
@@ -26,6 +27,12 @@ class GreenhouseAdapter (private val greenhouses: Greenhouse) : RecyclerView.Ada
         val temperatureTextView: TextView = itemView.findViewById(R.id.greenhouse_temperature_value)
         val humidityTextView: TextView = itemView.findViewById(R.id.greenhouse_humidity_value)
         val soilMoistureTextView: TextView = itemView.findViewById(R.id.greenhouse_soil_moisture_value)
+
+        init {
+            itemView.setOnClickListener{
+                onItemClick?.invoke(greenhouses[adapterPosition])
+            }
+        }
 
     }
 

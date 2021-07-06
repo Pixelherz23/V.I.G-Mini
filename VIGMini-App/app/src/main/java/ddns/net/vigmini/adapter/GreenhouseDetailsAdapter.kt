@@ -1,36 +1,43 @@
 package ddns.net.vigmini.adapter
 
+
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Spinner
+import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
-import com.anychart.AnyChart
-import com.anychart.AnyChartView
-import com.anychart.chart.common.dataentry.DataEntry
-import com.anychart.chart.common.dataentry.ValueDataEntry
-import com.anychart.charts.Cartesian
-import com.anychart.data.Set
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import ddns.net.vigmini.R
+
+import ddns.net.vigmini.activities.GreenhouseSettingsActivity
 import ddns.net.vigmini.data.access.DETAIL_ITEMS
+import ddns.net.vigmini.data.access.PRODUCT_KEY
+
 import ddns.net.vigmini.data.model.Measurements
 
-class GreenhouseDetailsAdapter (private val measurements: Measurements) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+
+
+class GreenhouseDetailsAdapter (private val measurements: Measurements, private val productKey: String, private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
         // Your holder should contain and initialize a member variable
         // for any view that will be set as you render a row
-        val anyChartView :AnyChartView = itemView.findViewById(R.id.detail_anyChartView)
+        val anyChartView :LineChart = itemView.findViewById(R.id.detail_anyChartView)
 
     }
 
     inner class ButtonBarViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
         // Your holder should contain and initialize a member variable
         // for any view that will be set as you render a row
-        val spinnerDiagram :Spinner = itemView.findViewById(R.id.detailChart_spinner)
-        val spinnerInterval :Spinner = itemView.findViewById(R.id.detailInterval_spinner)
+        val buttonSettings: Button = itemView.findViewById(R.id.detailSettings_button)
+        val buttonInterval: Button = itemView.findViewById(R.id.detailSettings_button)
 
     }
 
@@ -53,20 +60,24 @@ class GreenhouseDetailsAdapter (private val measurements: Measurements) : Recycl
                 // Return a new holder instance
                 return  ViewHolder(infoView)
             }
-
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(getItemViewType(position)){
             1 -> {
-
+                holder as ButtonBarViewHolder
+                holder.buttonSettings.setOnClickListener {
+                    val intent = Intent(context, GreenhouseSettingsActivity::class.java)
+                    intent.putExtra(PRODUCT_KEY, productKey)
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent)
+                }
             }
             2 -> {
                 lineChart(position, holder)
             }
         }
-
     }
 
     override fun getItemCount(): Int {
@@ -74,36 +85,45 @@ class GreenhouseDetailsAdapter (private val measurements: Measurements) : Recycl
     }
 
     private fun lineChart(type: Int, holder: RecyclerView.ViewHolder){
-        val cartesian: Cartesian = AnyChart.line()
-        cartesian.animation(true)
 
-        val chartData = ArrayList<DataEntry>()
+        var label: String = ""
+        var xAxisValues = ArrayList<String>()
+        val lineEntry = ArrayList<Entry>()
+
         when(type){
             1->{
-                cartesian.title("Temperatur")
+                label = "Temperatur"
+                var index: Int = 0
                 for(measurement in measurements){
-                    chartData.add(ValueDataEntry(measurement.TIME_STAMP.substring(0, 15), measurement.TEMPERATURE.toDouble()))
+                    xAxisValues.add(measurement.TIME_STAMP.substring(0, 22))
+                    lineEntry.add(Entry(measurement.TEMPERATURE.toFloat(), index))
+                    index++
                 }
             }
             2->{
-                cartesian.title("Luftfeuchtigkeit")
+                label = "Luftfeuchtigkeit"
+                var index: Int = 0
                 for(measurement in measurements){
-                    chartData.add(ValueDataEntry(measurement.TIME_STAMP.substring(0, 15), measurement.HUMIDITY))
+                    xAxisValues.add(measurement.TIME_STAMP.substring(0, 22))
+                    lineEntry.add(Entry(measurement.HUMIDITY.toFloat(), index))
+                    index++
                 }
             }
             3->{
-                cartesian.title("Bodenfeuchtigkeit")
+                label = "Bodenfeuchtigkeit"
+                var index: Int = 0
                 for(measurement in measurements){
-                    chartData.add(ValueDataEntry(measurement.TIME_STAMP.substring(0, 15), measurement.SOIL_MOISTURE.toDouble()))
+                    xAxisValues.add(measurement.TIME_STAMP.substring(0, 22))
+                    lineEntry.add(Entry(measurement.SOIL_MOISTURE.toFloat(), index))
+                    index++
                 }
             }
         }
-        /*val set = Set.instantiate()
-        set.data(chartData)
-        val mapping = set.mapAs("{x: 'x', value 'value'}")
-        cartesian.line(mapping)*/
+
+        val lineDataSet = LineDataSet(lineEntry, label)
+        val data = LineData(xAxisValues, lineDataSet)
         holder as ViewHolder
-        holder.anyChartView.setChart(cartesian)
+        holder.anyChartView.data = data
     }
 
 }

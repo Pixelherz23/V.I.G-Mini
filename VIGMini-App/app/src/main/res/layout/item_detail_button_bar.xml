@@ -21,23 +21,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Spinner
-                android:id="@+id/detailChart_spinner"
-                style="@android:style/Widget.Holo.Spinner"
+            <Button
+                android:id="@+id/detailSettings_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:entries="@array/chart"
                 android:foregroundTint="@color/white"
+                android:text="@string/settings"
                 app:layout_constraintEnd_toStartOf="@+id/textView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Spinner
-                android:id="@+id/detailInterval_spinner"
-                style="@android:style/Widget.Holo.Spinner"
+            <Button
+                android:id="@+id/detailInterval_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:entries="@array/interval"
+                android:text="@string/interval"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/textView"
                 app:layout_constraintTop_toTopOf="parent" />

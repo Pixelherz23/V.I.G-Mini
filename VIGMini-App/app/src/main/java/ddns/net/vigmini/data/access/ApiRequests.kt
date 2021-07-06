@@ -20,4 +20,41 @@ interface ApiRequests {
 
     @GET("/greenhouse/settings/{setting}")
     fun getGreenhouseSettings(@Path("setting") setting: String, @Query("product_key") productKey: String): Call<GreenhouseSettingsSubList>
+
+    @FormUrlEncoded
+    @POST("/user/new")
+    fun newUser(@Field("firstname") firstname: String , @Field("lastname") lastname: String,
+                 @Field("e-mail") email: String, @Field("password") password: String): Call<Void>
+
+    @FormUrlEncoded
+    @POST("/user/login")
+    fun userLogin(@Field("e-mail") email: String, @Field("password") password: String): Call<Void>
+
+    @GET("/user/information")
+    fun getUser(@Query("e-mail") email: String): Call<ArrayList<ArrayList<String>>>
+
+    @FormUrlEncoded
+    @POST("/user/information/update")
+    fun updateUser(@Field("firstname") firstname: String , @Field("lastname") lastname: String, @Field("e-mail") email: String): Call<Void>
+
+    @FormUrlEncoded
+    @POST("/user/information/update")
+    fun updateUser(@Field("firstname") firstname: String, @Field("lastname") lastname: String,
+                   @Field("e-mail") email: String, @Field("new_e-mail") newEmail: String): Call<Void>
+
+    @FormUrlEncoded
+    @POST("/user/information/update")
+    fun updateUser(@Field("firstname") firstname: String, @Field("lastname") lastname: String,
+                   @Field("e-mail") email: String, @Field("new_e-mail") newEmail: String,
+                   @Field("password") password: String, @Field("new_password") newPassword: String): Call<Void>
+
+    @FormUrlEncoded
+    @POST("/user/information/update")
+    fun updateUser(@Field("firstname") firstname: String, @Field("lastname") lastname: String,
+                   @Field("e-mail") email: String, @Field("password") password: String,
+                   @Field("new_password") newPassword: String): Call<Void>
+
+
+    @GET("/greenhouse/activate")
+    fun registerGreenhouse(@Query("product_key") productKey: String, @Query("e-mail") email: String): Call<Void>
 }

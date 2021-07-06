@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ddns.net.vigmini.R
 import ddns.net.vigmini.adapter.GreenhouseSettingsAdapter
 import ddns.net.vigmini.data.access.ApiService
+import ddns.net.vigmini.data.access.PRODUCT_KEY
 import ddns.net.vigmini.data.model.GreenhouseSettings
 import ddns.net.vigmini.data.model.GreenhouseSettingsSubList
 import kotlinx.coroutines.Dispatchers
@@ -33,9 +34,12 @@ class GreenhouseSettingsActivity : AppCompatActivity() {
         GlobalScope.launch(Dispatchers.IO) {
             try {
                 // hardcoded Product Key
-                val responseTemp = api.getGreenhouseSettings("temperature2", "GTD2-ERH6-E665").awaitResponse()
-                val responseSoilMoisture = api.getGreenhouseSettings("soil-moisture", "GTD2-ERH6-E665").awaitResponse()
-                val responseLight = api.getGreenhouseSettings("light", "GTD2-ERH6-E665").awaitResponse()
+                val responseTemp = api.getGreenhouseSettings("temperature2", intent.getStringExtra(
+                    PRODUCT_KEY)!!).awaitResponse()
+                val responseSoilMoisture = api.getGreenhouseSettings("soil-moisture", intent.getStringExtra(
+                    PRODUCT_KEY)!!).awaitResponse()
+                val responseLight = api.getGreenhouseSettings("light", intent.getStringExtra(
+                    PRODUCT_KEY)!!).awaitResponse()
                 if(responseTemp.isSuccessful && responseSoilMoisture.isSuccessful && responseLight.isSuccessful){
                     val data = GreenhouseSettings()
                     data.add(responseTemp.body()!!)

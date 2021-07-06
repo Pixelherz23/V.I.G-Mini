@@ -1,6 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <TextView
+        android:id="@+id/accSettings_emailTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:labelFor="@id/accSettings_emailEditText"
+        android:text="@string/e_mail"
+        android:textColor="@color/appBackground"
+        android:textSize="@dimen/inputLabelSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.154"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/accSettings_emailEditText"
+        android:layout_width="@dimen/inputWidth"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:autofillHints="E-Mail"
+        android:backgroundTint="@color/black"
+        android:textCursorDrawable="@drawable/color_cursor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accSettings_emailTextView" />
+
+    <TextView
+        android:id="@+id/accSettings_firstNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/firstName"
+        android:textColor="@color/appBackground"
+        android:textSize="@dimen/inputLabelSize"
+        android:labelFor="@id/accSettings_firstNameEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.164"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accSettings_emailEditText" />
+
+    <EditText
+        android:id="@+id/accSettings_firstNameEditText"
+        android:layout_width="@dimen/inputWidth"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:autofillHints="Vorname"
+        android:backgroundTint="@color/black"
+        android:textCursorDrawable="@drawable/color_cursor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accSettings_firstNameTextView" />
+
+    <TextView
+        android:id="@+id/accSettings_nameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:labelFor="@id/accSettings_nameEditText"
+        android:text="@string/name"
+        android:textColor="@color/appBackground"
+        android:textSize="@dimen/inputLabelSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.154"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accSettings_firstNameEditText" />
+
+    <EditText
+        android:id="@+id/accSettings_nameEditText"
+        android:layout_width="@dimen/inputWidth"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:autofillHints="Nachname"
+        android:backgroundTint="@color/black"
+        android:textCursorDrawable="@drawable/color_cursor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accSettings_nameTextView" />
+
+    <TextView
+        android:id="@+id/accSettings_passwordTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/password"
+        android:textColor="@color/appBackground"
+        android:textSize="@dimen/inputLabelSize"
+        android:labelFor="@id/accSettings_passwordEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.166"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accSettings_nameEditText" />
+
+    <EditText
+        android:id="@+id/accSettings_passwordEditText"
+        android:layout_width="@dimen/inputWidth"
+        android:layout_height="wrap_content"
+        android:autofillHints="Passwort"
+        android:backgroundTint="@color/black"
+        android:clickable="false"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:text="@string/placeholder"
+        android:textCursorDrawable="@drawable/color_cursor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accSettings_passwordTextView" />
+
+    <Button
+        android:id="@+id/accSettings_saveButton"
+        android:layout_width="@dimen/inputWidth"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/appBackground"
+        android:text="@string/save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accSettings_passwordEditText"
+        app:layout_constraintVertical_bias="0.103" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

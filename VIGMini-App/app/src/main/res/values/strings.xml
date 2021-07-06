@@ -25,6 +25,22 @@
     <string name="from">Von</string>
     <string name="to">Bis</string>
     <string name="light">Licht</string>
+    <string name="home">Übersicht</string>
+    <string name="news">News</string>
+    <string name="help">Hilfe</string>
+    <string name="settings">Einstellungen</string>
+    <string name="logout">Abmelden</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="product_key">Produkt Schlüssel</string>
+    <string name="placeholder">Platzhalter12345</string>
+    <string name="old_password">Altes Passwort</string>
+    <string name="new_password">Neues Passwort</string>
+    <string name="new_password_repeat">Neues Passwort wiederholen</string>
+    <string name="interval">Intervall</string>
+    <string name="chart">Diagramm</string>
     <string-array name="interval">
         <item>24 h</item>
         <item>7 Tage</item>
