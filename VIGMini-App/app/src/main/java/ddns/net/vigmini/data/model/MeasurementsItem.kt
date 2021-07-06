@@ -4,7 +4,7 @@ import java.util.*
 
 data class MeasurementsItem(
     val HUMIDITY: Int,
-    val SOIL_MOISTURE: Double,
-    val TEMPERATURE: Double,
-    val TIME_STAMP: Date
+    val SOIL_MOISTURE: String,
+    val TEMPERATURE: String,
+    val TIME_STAMP: String
 )
