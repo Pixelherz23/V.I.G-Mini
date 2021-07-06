@@ -24,8 +24,8 @@ class GreenhouseSettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cardview)
-
         getGreenhouseSettings(this)
+
     }
 
     private fun getGreenhouseSettings(reference :GreenhouseSettingsActivity){
@@ -48,7 +48,7 @@ class GreenhouseSettingsActivity : AppCompatActivity() {
 
                     withContext(Dispatchers.Main){
                         val gSettingsRecyclerView = findViewById<View>(R.id.recyclerView) as RecyclerView
-                        val adapter = GreenhouseSettingsAdapter(data)
+                        val adapter = GreenhouseSettingsAdapter(data, intent.getStringExtra(PRODUCT_KEY).toString(), applicationContext)
                         gSettingsRecyclerView.adapter = adapter
                         gSettingsRecyclerView.layoutManager = LinearLayoutManager(reference)
                     }

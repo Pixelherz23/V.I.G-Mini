@@ -1,5 +1,6 @@
 package ddns.net.vigmini.data.access
 
+import ddns.net.vigmini.adapter.GreenhouseSettingsAdapter
 import ddns.net.vigmini.data.model.*
 import retrofit2.Call
 import retrofit2.http.*
@@ -20,6 +21,29 @@ interface ApiRequests {
 
     @GET("/greenhouse/settings/{setting}")
     fun getGreenhouseSettings(@Path("setting") setting: String, @Query("product_key") productKey: String): Call<GreenhouseSettingsSubList>
+
+    @FormUrlEncoded
+    @POST("/greenhouse/settings/update")
+    fun updateSettingsTemp(@Field("product_key") productKey: String , @Field("max_temp") maxTemp: Double,
+                           @Field("temp_on") tempOn: Boolean): Call<Void>
+
+    @FormUrlEncoded
+    @POST("/greenhouse/settings/update")
+    fun updateSettingsSoilMoisture(@Field("product_key") productKey: String , @Field("min_soil_moiture") minSoilMoisture: Double,
+                                   @Field("soil_moisture_on") soilMoistureOn: Boolean): Call<Void>
+
+    @FormUrlEncoded
+    @POST("/greenhouse/settings/update")
+    fun updateSettingsSoilMoistureTime(@Field("product_key") productKey: String , @Field("from_tome") fromTime: String,
+                                       @Field("timetable_on") timetableOn: Boolean, @Field("timetable_type") timetableType: String,
+                                       @Field("interval") interval: Int): Call<Void>
+
+    @FormUrlEncoded
+    @POST("/greenhouse/settings/update")
+    fun updateSettingsLight(@Field("product_key") productKey: String , @Field("from_tome") fromTime: String,
+                                       @Field("to_tome") toTime: String, @Field("timetable_on") timetableOn: Boolean,
+                                       @Field("timetable_type") timetableType: String,
+                                       @Field("interval") interval: Int): Call<Void>
 
     @FormUrlEncoded
     @POST("/user/new")
